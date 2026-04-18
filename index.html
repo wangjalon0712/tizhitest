@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中医体质AI检测 · 大秦AI</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+:root {
+  --blue-dark:#1A2744; --blue-mid:#1E3A8A; --blue-light:#3B82F6;
+  --gold:#F59E0B; --gold-light:#FCD34D; --white:#FFFFFF;
+  --gray-50:#F8FAFC; --gray-100:#F1F5F9; --gray-200:#E2E8F0;
+  --gray-400:#94A3B8; --gray-600:#475569; --gray-800:#1E293B;
+  --text-primary:#1E2761; --text-secondary:#475569; --text-muted:#94A3B8;
+  --gradient-primary:linear-gradient(160deg,#1A2744 0%,#1E3A8A 30%,#2563EB 60%,#3730A3 100%);
+  --gradient-gold:linear-gradient(135deg,#F59E0B,#FCD34D);
+  --shadow-card:0 20px 60px rgba(30,58,138,0.15),0 8px 24px rgba(0,0,0,0.08);
+  --shadow-ai:0 20px 60px rgba(139,92,246,0.2),0 8px 24px rgba(0,0,0,0.1);
+  --radius-card:20px; --radius-btn:14px; --radius-option:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;background:var(--gradient-primary);min-height:100vh;color:var(--text-primary);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;}
+.page{display:none;min-height:100vh;padding:20px 20px 120px;}
+.page.active{display:block;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes shimmer{from{background-position:-200% center}to{background-position:200% center}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes typingDots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
+@keyframes progressPulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,0.4)}50%{box-shadow:0 0 0 8px rgba(139,92,246,0)}}
+@keyframes unlockShake{0%,100%{transform:rotate(0deg)}15%{transform:rotate(-15deg)}30%{transform:rotate(15deg)}45%{transform:rotate(-10deg)}60%{transform:rotate(10deg)}75%{transform:rotate(-5deg)}90%{transform:rotate(5deg)}}
+.container{max-width:900px;margin:0 auto;}
+.logo-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:0 4px;}
+.gb-badge{background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:11px;color:rgba(255,255,255,0.9);font-weight:500;}
+.gb-badge span{color:var(--gold-light);}
+.ai-badge{background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.4);border-radius:20px;padding:6px 14px;font-size:11px;color:#C4B5FD;font-weight:500;display:flex;align-items:center;gap:5px;}
+.ai-badge .dot{width:6px;height:6px;border-radius:50%;background:#A78BFA;animation:blink 1.5s infinite}
+#page-landing{padding-top:28px}
+.hero-illustration{text-align:center;margin-bottom:24px;animation:float 3s ease-in-out infinite}
+.hero-illustration svg{width:120px;height:120px;filter:drop-shadow(0 12px 24px rgba(0,0,0,0.3))}
+.hero-title{font-size:30px;font-weight:900;color:var(--white);text-align:center;line-height:1.35;margin-bottom:12px;letter-spacing:-0.3px;text-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.hero-title .highlight{background:var(--gradient-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-subtitle{font-size:14px;color:rgba(255,255,255,0.65);text-align:center;line-height:1.7;margin-bottom:28px}
+.hero-subtitle .gn{color:var(--gold-light);font-weight:700}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.feature-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:16px 14px;text-align:center;transition:transform 0.3s ease}
+.feature-card:hover{transform:translateY(-2px)}
+.feature-card .fc-icon{font-size:28px;margin-bottom:8px}
+.feature-card .fc-title{font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px}
+.feature-card .fc-desc{font-size:11px;color:rgba(255,255,255,0.55);line-height:1.5}
+.ai-banner{background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(99,102,241,0.15));backdrop-filter:blur(12px);border:1px solid rgba(139,92,246,0.3);border-radius:18px;padding:18px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px}
+.ai-banner .ab-icon{font-size:36px;flex-shrink:0}
+.ai-banner .ab-text{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.7}
+.ai-banner .ab-text strong{color:#C4B5FD}
+.ai-banner .ab-text .ai-tag{display:inline-block;background:rgba(139,92,246,0.3);border:1px solid rgba(139,92,246,0.5);border-radius:6px;padding:1px 8px;font-size:11px;color:#C4B5FD;margin-top:6px}
+.info-strip{display:flex;justify-content:center;gap:20px;margin-bottom:28px}
+.logo-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:0 4px;}
+.info-item{text-align:center}
+.info-item .ii-num{font-size:22px;font-weight:800;color:var(--gold-light)}
+.info-item .ii-label{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px}
+.btn-start{width:100%;padding:18px;background:var(--gradient-gold);border:none;border-radius:16px;font-size:18px;font-weight:800;color:#1A1A2E;cursor:pointer;letter-spacing:2px;box-shadow:0 8px 32px rgba(245,158,11,0.4),0 2px 8px rgba(245,158,11,0.2);position:relative;overflow:hidden;font-family:inherit;transition:all 0.3s ease;border:1px solid rgba(255,255,255,0.25)}
+.btn-start::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);animation:shimmer 3s infinite}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(245,158,11,0.5),0 4px 16px rgba(245,158,11,0.3);border-color:rgba(255,255,255,0.4)}
+.disclaimer{text-align:center;font-size:11px;color:rgba(255,255,255,0.35);margin-top:14px;line-height:1.6}
+
+/* 用户信息页 */
+.info-form-card{background:rgba(255,255,255,0.98);border-radius:var(--radius-card);padding:24px 20px;margin-bottom:16px;box-shadow:var(--shadow-card),0 1px 2px rgba(255,255,255,0.5) inset;animation:slideUp 0.4s ease;border:1px solid rgba(255,255,255,0.6)}
+.form-section{margin-bottom:20px}
+.form-section-title{font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:12px;display:flex;align-items:center;gap:6px;border-bottom:1.5px solid var(--gray-200);padding-bottom:8px}
+.form-section-title .fst-icon{font-size:18px}
+.form-group{margin-bottom:12px}
+.form-label{font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px;display:block}
+.gender-options{display:flex;gap:8px}
+.gender-btn{flex:1;padding:12px 8px;border-radius:12px;border:2px solid var(--gray-200);background:var(--gray-50);cursor:pointer;transition:all 0.2s;text-align:center;font-size:12px;font-weight:600;color:var(--gray-600);font-family:inherit;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.gender-btn:hover{border-color:var(--blue-light);background:#EFF6FF;transform:translateY(-2px);box-shadow:0 6px 16px rgba(37,99,235,0.15)}
+.gender-btn.selected{border-color:var(--blue-light);background:linear-gradient(135deg,#EFF6FF,#DBEAFE);color:var(--blue-mid);box-shadow:0 4px 12px rgba(37,99,235,0.25),0 1px 2px rgba(255,255,255,0.8) inset}
+.gender-btn .gb-icon{font-size:24px;display:block;margin-bottom:4px}
+.age-options{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.age-btn{padding:10px 6px;border-radius:10px;border:2px solid var(--gray-200);background:var(--gray-50);cursor:pointer;transition:all 0.2s;text-align:center;font-size:12px;font-weight:600;color:var(--gray-600);font-family:inherit;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.age-btn:hover{border-color:var(--blue-light);background:#EFF6FF;box-shadow:0 4px 12px rgba(37,99,235,0.12)}
+.age-btn.selected{border-color:var(--blue-light);background:linear-gradient(135deg,#EFF6FF,#DBEAFE);color:var(--blue-mid);box-shadow:0 4px 12px rgba(37,99,235,0.2),0 1px 2px rgba(255,255,255,0.8) inset}
+.hw-input{flex:1;padding:12px 14px;border-radius:12px;border:2px solid var(--gray-200);background:var(--gray-50);font-size:14px;font-family:inherit;color:var(--gray-800);transition:all 0.2s}
+.hw-input:focus{outline:none;border-color:var(--blue-light);background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,0.15),0 2px 8px rgba(59,130,246,0.1)}
+.form-row{display:flex;gap:10px}
+.form-row .form-group{flex:1}
+.medical-history-options{display:flex;flex-direction:column;gap:8px}
+.mh-item{display:inline-block;padding:10px 20px;border-radius:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);cursor:pointer;transition:all 0.25s;font-size:14px;color:#475569;font-family:inherit;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+.mh-item:hover{border-color:rgba(99,102,241,0.5);background:rgba(99,102,241,0.08);color:#334155;transform:translateY(-1px)}
+.mh-item.selected{border-color:var(--blue-light);background:rgba(59,130,246,0.15);color:#3B82F6;font-weight:600;box-shadow:0 4px 12px rgba(59,130,246,0.15)}
+.mh-note{font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5}
+.user-summary-card{background:linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;animation:slideUp 0.4s ease}
+.user-summary-card .us-icon{font-size:24px;flex-shrink:0;filter:brightness(1.2)}
+.user-summary-card .us-text{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.q-header-left{display:flex;align-items:center;gap:10px}
+.q-back-btn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease}
+.q-back-btn:hover{background:rgba(255,255,255,0.2)}
+.q-title-text{font-size:15px;font-weight:600;color:var(--white)}
+.q-progress-text{font-size:13px;color:rgba(255,255,255,0.55);font-weight:500}
+.progress-wrap{margin-bottom:24px}
+.progress-track{height:6px;background:rgba(255,255,255,0.12);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gradient-gold);border-radius:99px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 12px rgba(245,158,11,0.5)}
+.progress-steps{display:flex;justify-content:space-between;margin-top:8px}
+.progress-step{font-size:10px;color:rgba(255,255,255,0.35);font-weight:500;cursor:pointer;transition:color 0.3s}
+.progress-step.active{color:var(--gold-light)}
+.progress-step.done{color:rgba(255,255,255,0.55)}
+.section-title{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.section-badge{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.section-label{font-size:17px;font-weight:700;color:var(--white)}
+.section-desc{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px}
+.section-indicator{margin-left:auto;background:rgba(255,255,255,0.1);border-radius:20px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,0.55);font-weight:500}
+.question-card{background:rgba(255,255,255,0.97);border-radius:var(--radius-card);padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow-card);animation:slideUp 0.4s ease}
+.q-text{font-size:15px;font-weight:600;color:var(--gray-800);line-height:1.5;margin-bottom:8px}
+.q-hint{font-size:11px;color:var(--text-muted);margin-top:-10px;margin-bottom:14px;padding-left:2px}
+.options{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.q-num{font-size:11px;font-weight:600;color:#3B82F6;white-space:nowrap;margin-left:auto}
+.q-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.option-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;border-radius:var(--radius-option);border:2px solid var(--gray-200);background:var(--gray-50);cursor:pointer;transition:all 0.2s ease;min-height:64px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.option-btn:hover{border-color:var(--blue-light);background:#EFF6FF;transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,0.25)}
+.option-btn.selected{border-color:var(--blue-light);background:linear-gradient(135deg,#EFF6FF,#DBEAFE);box-shadow:0 4px 16px rgba(37,99,235,0.35),0 1px 2px rgba(255,255,255,0.8) inset}
+.option-btn .opt-score{font-size:19px;font-weight:800;color:var(--blue-dark);line-height:1;margin-bottom:3px}
+.option-btn.selected .opt-score{color:var(--blue-mid)}
+.option-btn .opt-label{font-size:9px;color:var(--text-muted);font-weight:500;text-align:center;line-height:1.3}
+.option-btn.selected .opt-label{color:var(--blue-mid);font-weight:600}
+.q-nav{display:flex;gap:12px;margin-top:22px}
+.q-nav{display:flex;gap:12px;position:fixed;bottom:0;left:0;right:0;padding:12px 20px;background:linear-gradient(to top,rgba(26,39,68,0.98),rgba(26,39,68,0.9));backdrop-filter:blur(10px);z-index:100}
+.btn-nav{flex:1;padding:15px;border-radius:var(--radius-btn);font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s ease;font-family:inherit;border:none}
+.btn-prev{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:var(--white);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.btn-prev:hover{background:rgba(255,255,255,0.2);transform:translateY(-1px)}
+.btn-next{background:var(--gradient-gold);color:#1A1A2E;box-shadow:0 6px 24px rgba(245,158,11,0.35),inset 0 1px 0 rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.2)}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(245,158,11,0.45),inset 0 1px 0 rgba(255,255,255,0.3)}
+.btn-next:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-form-next{width:100%;padding:18px;background:var(--gradient-gold);border:none;border-radius:16px;font-size:17px;font-weight:800;color:#1A1A2E;cursor:pointer;box-shadow:0 8px 32px rgba(245,158,11,0.4);font-family:inherit;transition:all 0.3s ease;margin-top:8px}
+.btn-form-next:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(245,158,11,0.5)}
+.btn-form-next:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.form-back-btn{width:100%;padding:14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:14px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.7);cursor:pointer;font-family:inherit;transition:all 0.3s ease;margin-top:10px}
+.form-back-btn:hover{background:rgba(255,255,255,0.18)}
+#page-ai-loading{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 20px}
+.ai-brain-container{position:relative;width:160px;height:160px;margin-bottom:32px}
+.ai-brain-ring{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(139,92,246,0.2);animation:spin 3s linear infinite}
+.ai-brain-ring::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:#8B5CF6;box-shadow:0 0 10px #8B5CF6}
+.ai-brain-ring-2{position:absolute;inset:16px;border-radius:50%;border:2px solid rgba(99,102,241,0.3);animation:spin 2s linear infinite reverse}
+.ai-brain-core{position:absolute;inset:40px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#6366F1);display:flex;align-items:center;justify-content:center;animation:pulse 2s ease-in-out infinite;box-shadow:0 0 30px rgba(139,92,246,0.4)}
+.ai-brain-core span{font-size:40px}
+.ai-brain-particles{position:absolute;inset:0}
+.ai-particle{position:absolute;width:5px;height:5px;border-radius:50%;background:#A78BFA;opacity:0.7}
+.ai-particle:nth-child(1){animation:orbit 3s linear infinite;top:50%;left:50%;margin:-2.5px}
+.ai-particle:nth-child(2){animation:orbit 4s linear infinite 0.5s;top:50%;left:50%;margin:-2.5px}
+.ai-particle:nth-child(3){animation:orbit 2.5s linear infinite 1s;top:50%;left:50%;margin:-2.5px}
+@keyframes orbit{from{transform:rotate(0deg) translateX(70px) rotate(0deg)}to{transform:rotate(360deg) translateX(70px) rotate(-360deg)}}
+.ai-loading-title{font-size:22px;font-weight:800;color:var(--white);margin-bottom:10px}
+.ai-loading-sub{font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:8px}
+.ai-loading-dots{font-size:14px;color:#C4B5FD;margin-bottom:28px;min-height:22px}
+.ai-loading-dots::after{content:'.';animation:typingDots 1.5s infinite}
+.ai-steps{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px}
+.ai-step{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);font-size:13px;color:rgba(255,255,255,0.6);transition:all 0.5s ease}
+.ai-step.done{background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.3);color:#C4B5FD}
+.ai-step.active{background:rgba(139,92,246,0.25);border-color:rgba(139,92,246,0.5);color:#E9D5FF;animation:progressPulse 1.5s infinite}
+.ai-step .step-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.ai-step .step-spinner{width:18px;height:18px;border:2px solid rgba(139,92,246,0.3);border-top-color:#A78BFA;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+.ai-step.done .step-spinner{display:none}
+.ai-step .step-check{display:none;color:#22C55E;font-size:16px}
+.ai-step.done .step-check{display:block}
+#page-result{padding-top:20px}
+.result-hero{text-align:center;margin-bottom:20px;animation:slideUp 0.6s ease}
+.result-hero-icon{font-size:52px;margin-bottom:10px;display:block;animation:pulse 2s ease-in-out infinite}
+.result-hero-title{font-size:20px;font-weight:800;color:var(--white);margin-bottom:6px}
+.result-hero-sub{font-size:13px;color:rgba(255,255,255,0.55)}
+.card{background:rgba(255,255,255,0.98);border-radius:var(--radius-card);padding:24px 20px;margin-bottom:14px;box-shadow:var(--shadow-card),0 1px 2px rgba(255,255,255,0.5) inset;animation:slideUp 0.5s ease both;border:1px solid rgba(255,255,255,0.6)}
+.primary-card{text-align:center;position:relative;overflow:hidden;padding-bottom:20px}
+.primary-card .id-song-verse{font-size:14px;color:#166534;line-height:1.8;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:8px;font-style:italic}
+.primary-card .id-song-desc{font-size:12px;color:#475569;line-height:1.7;text-align:left}
+.pc-label{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.pc-emoji{font-size:60px;margin-bottom:10px;display:block}
+.pc-name{font-size:26px;font-weight:900;margin-bottom:6px}
+.pc-desc{font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px}
+.pc-score-bar{background:var(--gray-100);border-radius:99px;height:10px;overflow:hidden;margin-bottom:4px}
+.pc-score-fill{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+.pc-score-text{font-size:12px;color:var(--text-muted);font-weight:500}
+.pc-risk{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-top:14px}
+.as-title{font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.as-title span{font-size:17px}
+.as-grid{display:flex;flex-direction:column;gap:8px}
+.as-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;background:var(--gray-50);transition:all 0.3s}
+.as-item.active-type{background:#EFF6FF;border:1.5px solid #BFDBFE}
+.as-item .as-emoji{font-size:20px;flex-shrink:0;width:26px;text-align:center}
+.as-item .as-name{font-size:13px;font-weight:600;color:var(--gray-800);flex:1}
+.as-item .as-bar-track{width:70px;height:5px;background:var(--gray-200);border-radius:99px;overflow:hidden}
+.as-item .as-bar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(0.4,0,0.2,1)}
+.as-item .as-score-num{font-size:13px;font-weight:700;min-width:34px;text-align:right}
+.judgment-card{background:rgba(255,255,255,0.97);border-radius:var(--radius-card);padding:20px 18px;margin-bottom:14px;animation:slideUp 0.5s ease 0.05s both}
+.judgment-title{font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.judgment-rules{display:flex;flex-direction:column;gap:8px}
+.judgment-rule{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.6}
+.judgment-rule.normal{background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D}
+.judgment-rule.deviation{background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C}
+.judgment-rule.tendency{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.judgment-rule .rule-badge{flex-shrink:0;font-weight:700}
+.ai-analysis-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(99,102,241,0.05));border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-card);padding:24px 20px;margin-bottom:14px;box-shadow:var(--shadow-ai),inset 0 1px 0 rgba(255,255,255,0.5);animation:slideUp 0.5s ease 0.15s both}
+.ai-card-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.ai-card-badge{background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:20px;padding:4px 10px;font-size:11px;color:#A78BFA;font-weight:700;display:flex;align-items:center;gap:5px}
+.ai-card-badge span{width:5px;height:5px;border-radius:50%;background:#A78BFA;animation:blink 1.2s infinite}
+.ai-card-title{font-size:15px;font-weight:700;color:var(--gray-800);flex:1}
+.ai-analysis-section{margin-bottom:16px}
+.ai-section-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#7C3AED;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.ai-section-label span{font-size:15px}
+.ai-section-content{background:rgba(255,255,255,0.7);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--text-secondary);line-height:1.8;border-left:3px solid #8B5CF6}
+.ai-section-content .highlight-text{color:#7C3AED;font-weight:600}
+.ai-section-content .warn-text{color:#DC2626;font-weight:600}
+.ai-section-content .good-text{color:#059669;font-weight:600}
+.ai-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.ai-tag{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:20px;padding:4px 12px;font-size:12px;color:#7C3AED;font-weight:500}
+.ai-divider{height:1px;background:rgba(139,92,246,0.12);margin:16px 0}
+.id-song-card{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1px solid #86EFAC;border-radius:var(--radius-card);padding:20px 18px;margin-bottom:14px;animation:slideUp 0.5s ease 0.2s both;box-shadow:0 4px 16px rgba(34,197,94,0.1),inset 0 1px 0 rgba(255,255,255,0.6)}
+.id-song-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.id-song-icon{font-size:20px}
+.id-song-title{font-size:14px;font-weight:700;color:#15803D}
+.id-song-verse{font-size:14px;color:#166534;line-height:2;font-weight:600;padding:12px 16px;background:rgba(255,255,255,0.7);border-radius:12px;border-left:4px solid #22C55E;margin-bottom:12px;font-style:italic}
+.id-song-desc{font-size:12px;color:#166534;line-height:1.8}
+.id-song-desc strong{color:#15803D;font-weight:700}
+.diet-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;text-align:center}
+.diet-item{display:flex;align-items:center;justify-content:flex-start;gap:8px;font-size:14px;color:#166534;padding:10px 12px;background:rgba(255,255,255,0.6);border-radius:8px;text-align:left}
+.diet-item .di-emoji{font-size:18px;flex-shrink:0;min-width:24px;text-align:center}
+.diet-item .di-label{font-weight:700;font-size:14px;color:#15803D;min-width:42px;display:inline-block}
+.rx-card{background:linear-gradient(135deg,#FFF7ED,#FFEDD5);border:1px solid #FED7AA;border-radius:var(--radius-card);padding:20px 18px;margin-bottom:14px;animation:slideUp 0.5s ease 0.25s both;box-shadow:0 4px 16px rgba(251,146,60,0.1),inset 0 1px 0 rgba(255,255,255,0.5)}
+.rx-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.rx-icon{font-size:20px}
+.rx-title{font-size:14px;font-weight:700;color:#92400E}
+.rx-items{display:flex;flex-direction:column;gap:10px}
+.rx-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.8);border:1px solid rgba(251,146,60,0.2)}
+.rx-item.highlight-rx{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-color:#F59E0B}
+.rx-item .ri-emoji{font-size:22px;flex-shrink:0;margin-top:1px}
+.rx-item .ri-name{font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:3px}
+.rx-item .ri-desc{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+/* 雷达图样式 */
+.radar-chart{display:flex;flex-direction:column;gap:8px}
+.radar-item{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:10px;transition:background 0.3s}
+.radar-item.radar-top{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2)}
+.radar-emoji{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.radar-bar-wrap{flex:1;height:10px;background:rgba(255,255,255,0.1);border-radius:5px;overflow:hidden}
+.radar-bar-fill{height:100%;border-radius:5px;transition:width 1.5s ease-out}
+.radar-score{font-size:13px;width:32px;text-align:right;flex-shrink:0}
+
+.unlock-card{background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(253,224,71,0.1));border:2px solid rgba(245,158,11,0.45);border-radius:24px;padding:28px 20px;margin-bottom:14px;text-align:center;animation:slideUp 0.5s ease 0.3s both;box-shadow:0 8px 32px rgba(245,158,11,0.15),inset 0 1px 0 rgba(255,255,255,0.15)}
+.unlock-icon{font-size:56px;margin-bottom:12px;display:block;animation:unlockShake 2s ease-in-out 0.5s}
+
+/* 手机优化 */
+@media screen and (max-width:480px){
+  html{font-size:15px;}
+  .container{max-width:100%;}
+  .page{padding:14px 12px 120px;}
+  .hero-title{font-size:24px;}
+  .hero-illustration svg{width:100px;height:100px;}
+  .feature-grid{grid-template-columns:1fr;gap:10px;}
+  .feature-card{padding:14px 12px;}
+  .ai-banner{padding:14px 16px;}
+  .btn-start{padding:16px;font-size:16px;}
+  .question-card{padding:18px 14px;}
+  .options{grid-template-columns:repeat(5,1fr);gap:5px;}
+  .option-btn{min-height:64px;padding:8px 2px;}
+  .option-btn .opt-score{font-size:17px;}
+  .option-btn .opt-label{font-size:8px;}
+  .btn-nav{padding:14px;font-size:14px;}
+  .card{padding:20px 16px;}
+  .pc-name{font-size:22px;}
+  .pc-emoji{font-size:50px;}
+  .ai-analysis-card{padding:20px 16px;}
+  .ai-section-content{padding:12px 14px;font-size:12px;}
+  .id-song-card{padding:18px 14px;}
+  .id-song-verse{font-size:13px;padding:10px 12px;}
+  .diet-detail-grid{grid-template-columns:1fr;}
+  .rx-card{padding:18px 14px;}
+  .rx-item{padding:10px 12px;}
+  .unlock-card{padding:24px 16px;}
+  #float-share-btn{width:44px;height:44px;top:70px;right:12px;}
+  #float-bottom-btns{bottom:16px;gap:12px;}
+  #float-bottom-btns button{padding:10px 16px;font-size:13px;}
+}
+
+/* 超小屏幕 */
+@media screen and (max-width:360px){
+  html{font-size:14px;}
+  .options{grid-template-columns:repeat(5,1fr);gap:4px;}
+  .option-btn{min-height:58px;padding:6px 0;}
+  .option-btn .opt-score{font-size:15px;}
+  .option-btn .opt-label{font-size:7px;}
+}
+.unlock-title{font-size:20px;font-weight:900;color:var(--white);margin-bottom:6px}
+.unlock-desc{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7;margin-bottom:20px}
+.wechat-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:#07C160;border-radius:50px;font-size:16px;font-weight:800;color:white;cursor:pointer;text-decoration:none;box-shadow:0 8px 24px rgba(7,193,96,0.4);transition:all 0.3s ease;font-family:inherit;border:none;margin-bottom:8px}
+.wechat-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 36px rgba(7,193,96,0.5)}
+.wechat-btn .wbi-icon{font-size:22px}
+.unlock-note{font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6}
+.cta-card{background:var(--gradient-gold);border-radius:20px;padding:22px 20px;margin-bottom:14px;text-align:center;box-shadow:0 12px 40px rgba(245,158,11,0.4),inset 0 1px 0 rgba(255,255,255,0.3);animation:slideUp 0.5s ease 0.35s both;border:1px solid rgba(255,255,255,0.25)}
+.cta-eyebrow{font-size:11px;font-weight:700;color:rgba(26,26,46,0.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.cta-title{font-size:20px;font-weight:900;color:#1A1A2E;margin-bottom:6px}
+.cta-desc{font-size:12px;color:rgba(26,26,46,0.7);margin-bottom:16px;line-height:1.6}
+.btn-cta{width:100%;padding:15px;background:#1A2744;border:none;border-radius:14px;font-size:16px;font-weight:800;color:var(--white);cursor:pointer;font-family:inherit;transition:all 0.3s ease;box-shadow:0 6px 24px rgba(26,39,68,0.3),inset 0 1px 0 rgba(255,255,255,0.1)}
+.btn-cta:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(26,39,68,0.4),inset 0 1px 0 rgba(255,255,255,0.15)}
+.btn-retest{width:100%;padding:13px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-btn);font-size:14px;font-weight:600;color:rgba(255,255,255,0.75);cursor:pointer;font-family:inherit;transition:all 0.3s ease;margin-bottom:8px}
+.btn-retest:hover{background:rgba(255,255,255,0.2)}
+.result-footer{text-align:center;font-size:11px;color:rgba(255,255,255,0.3);margin-top:14px;line-height:1.7}
+.pc-color-气虚{color:#3B82F6}.pc-color-阳虚{color:#6366F1}.pc-color-阴虚{color:#EC4899}.pc-color-血瘀{color:#EF4444}.pc-color-痰湿{color:#F97316}.pc-color-湿热{color:#22C55E}.pc-color-气郁{color:#8B5CF6}.pc-color-特禀{color:#14B8A6}.pc-color-平和{color:#22C55E}
+/* 截图时隐藏的元素 */
+.no-screenshot{display:none}
+@media(max-width:640px){.container{padding:0 4px}.hero-title{font-size:26px}.feature-grid{grid-template-columns:1fr 1fr;gap:8px}.options{grid-template-columns:repeat(5,1fr);gap:5px}.option-btn{padding:9px 2px;min-height:66px}.option-btn .opt-score{font-size:17px}.option-btn .opt-label{font-size:8px}.question-card{padding:18px 14px}.ai-brain-container{width:130px;height:130px}.age-options{grid-template-columns:repeat(3,1fr)}.diet-detail-grid{grid-template-columns:1fr}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     页面1：首页
+═══════════════════════════════════════════ -->
+<div id="page-landing" class="page active">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:0 4px;">
+      <div style="font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:6px 14px;">GB/T 46939—2025</div>
+      <div style="font-size:12px;color:#C4B5FD;font-weight:600;background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.3);border-radius:20px;padding:6px 14px;">大秦AI</div>
+    </div>
+    <div class="hero-illustration" style="display:flex;justify-content:center;">
+      <div style="position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:72px;line-height:1;filter:drop-shadow(0 4px 12px rgba(139,92,246,0.4));">🧘</span>
+        <div style="position:absolute;inset:0;border:2px solid rgba(139,92,246,0.2);border-radius:50%;animation:pulse 3s ease-in-out infinite;"></div>
+        <div style="position:absolute;inset:8px;border:1px solid rgba(139,92,246,0.15);border-radius:50%;"></div>
+      </div>
+    </div>
+    <h1 class="hero-title"><span class="highlight">3分钟</span>测出<span class="highlight">中医体质</span><br><span class="highlight">AI智能</span>分析 · <span class="highlight">私人定制</span>方案</h1>
+    <div style="display:flex;justify-content:center;gap:10px;margin:20px 0 24px 0;">
+      <div style="width:100px;background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(234,88,12,0.15));border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:14px 8px;text-align:center;box-shadow:0 4px 12px rgba(245,158,11,0.1);">
+        <div style="font-size:32px;font-weight:900;background:var(--gradient-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;">3</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px;">分钟出结果</div>
+      </div>
+      <div style="width:100px;background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(234,88,12,0.15));border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:14px 8px;text-align:center;box-shadow:0 4px 12px rgba(245,158,11,0.1);">
+        <div style="font-size:32px;font-weight:900;background:var(--gradient-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;">AI</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px;">私人订制</div>
+      </div>
+      <div style="width:100px;background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(234,88,12,0.15));border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:14px 8px;text-align:center;box-shadow:0 4px 12px rgba(245,158,11,0.1);">
+        <div style="font-size:32px;font-weight:900;background:var(--gradient-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;">9</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px;">九种中医体质</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:16px;">
+      <!-- 九种体质标签 -->
+      <div style="max-width:320px;width:100%;padding:16px 14px;border-radius:16px;text-align:center;background:linear-gradient(135deg,rgba(139,92,246,0.18),rgba(99,102,241,0.1));border:1px solid rgba(139,92,246,0.22);box-shadow:0 4px 16px rgba(139,92,246,0.1);">
+        <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;">📋 九种中医体质自测</div>
+        <div style="font-size:12px;font-weight:600;color:#fbbf24;margin-bottom:10px;">国标27题精准判定体质</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">☀️ 平和型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">💨 气虚型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🥶 阳虚型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🔥 阴虚型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">💧 痰湿型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🌿 湿热型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🩸 血瘀型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🌙 气郁型</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.15));border:1px solid rgba(139,92,246,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🌸 特禀型</span>
+        </div>
+      </div>
+      <!-- AI分析功能 -->
+      <div style="max-width:320px;width:100%;padding:16px 14px;border-radius:16px;text-align:center;background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(16,185,129,0.08));border:1px solid rgba(34,197,94,0.2);box-shadow:0 4px 16px rgba(34,197,94,0.08);">
+        <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;">🤖 大秦AI深度分析</div>
+        <div style="font-size:12px;font-weight:600;color:#4ade80;margin-bottom:10px;">心脑血管风险提前预警</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.15));border:1px solid rgba(34,197,94,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">📋 体质问卷</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.15));border:1px solid rgba(34,197,94,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🏥 既往病史</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.15));border:1px solid rgba(34,197,94,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">⚠️ 风险因素</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.15));border:1px solid rgba(34,197,94,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🔍 体质辨析</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.15));border:1px solid rgba(34,197,94,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">🍎 食疗方案</span>
+          <span style="min-width:72px;padding:8px 6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.15));border:1px solid rgba(34,197,94,0.25);border-radius:8px;color:#fff;font-size:12px;font-weight:500;text-align:center;">💆 调理建议</span>
+        </div>
+      </div>
+    </div>
+    <!-- 开始按钮 -->
+    <div style="max-width:320px;width:100%;margin:0 auto 16px auto;">
+      <button class="btn-start" onclick="startTest()">▶ 开始AI智能检测</button>
+    </div>
+    <p class="disclaimer" style="text-align:center;line-height:1.8;">本测试基于《中医体质分类与判定》（GB/T 46939—2025）简化版量表<br>仅供健康科普参考，不替代专业医疗诊断</p>
+  </div>
+</div>
+
+<!-- 开发者测试面板 - 已隐藏 -->
+<!-- <div id="dev-panel">...</div> -->
+
+<!-- ═══════════════════════════════════════════
+     页面2：用户信息采集
+═══════════════════════════════════════════ -->
+<div id="page-user-info" class="page">
+  <div class="container">
+    <div class="q-header">
+      <div class="q-header-left">
+        <button class="q-back-btn" onclick="goHome()">✕</button>
+        <div class="q-title-text">填写基本信息</div>
+      </div>
+      <div class="q-progress-text">数据仅本地处理，保护隐私</div>
+    </div>
+    <div class="info-form-card">
+      <div class="form-section">
+        <div class="form-section-title" style="font-size:16px;margin-bottom:16px;text-align:center;justify-content:center;"><span class="fst-icon">👤</span> 基础信息</div>
+        <div style="font-size:12px;color:#94a3b8;text-align:center;margin-top:-8px;margin-bottom:16px;">（部分题目会因基础信息调整）</div>
+        <div class="gender-options">
+          <button class="gender-btn" onclick="selectGender('male')" id="gender-male"><span class="gb-icon">👨</span>男士</button>
+          <button class="gender-btn" onclick="selectGender('female')" id="gender-female"><span class="gb-icon">👩</span>女士</button>
+        </div>
+        <div class="form-group">
+          <div style="display:flex;gap:10px;">
+            <div style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;text-align:center;">
+              <div style="color:#94a3b8;font-size:12px;margin-bottom:6px;">身高</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:2px;">
+                <input type="number" style="width:50px;background:none;border:none;color:#1e293b;font-size:18px;text-align:center;outline:none;" id="height-input" value="175" min="100" max="220" oninput="checkFormComplete()">
+                <span style="color:#64748b;font-size:13px;">cm</span>
+              </div>
+            </div>
+            <div style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;text-align:center;">
+              <div style="color:#94a3b8;font-size:12px;margin-bottom:6px;">体重</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:2px;">
+                <input type="number" style="width:50px;background:none;border:none;color:#1e293b;font-size:18px;text-align:center;outline:none;" id="weight-input" value="75" min="30" max="200" oninput="checkFormComplete()">
+                <span style="color:#64748b;font-size:13px;">kg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <select id="age-select" onchange="selectAge(this.value)" style="width:100%;padding:14px 16px;font-size:15px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;background:linear-gradient(135deg,rgba(30,41,59,0.8),rgba(51,65,85,0.6));color:#64748b;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path fill=%22%2364748b%22 d=%22M6 8L0 0h12z%22/></svg>');background-repeat:no-repeat;background-position:right 16px center;cursor:pointer;text-align:center;text-align-last:center;">
+            <option value="">请选择年龄段</option>
+            <option value="≤25">青少年（≤25岁）</option>
+            <option value="26-40">青壮年（26-40岁）</option>
+            <option value="41-55">中年（41-55岁）</option>
+            <option value="56-69">中老年（56-69岁）</option>
+            <option value="≥70">老年（≥70岁）</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title" style="font-size:16px;text-align:center;justify-content:center;"><span class="fst-icon">🏥</span> 健康信息</div>
+        <div style="font-size:12px;color:#94a3b8;text-align:center;margin-top:-8px;margin-bottom:12px;">（选择既往病史 · 可多选）</div>
+        <div class="medical-history-options" id="mh-options" style="display:flex;flex-direction:column;gap:6px;">
+          <div style="text-align:center;color:#64748b;font-size:13px;padding:20px 0;">请先选择年龄段</div>
+        </div>
+        <div class="mh-note" style="text-align:center;">💡 提供病史信息有助于AI生成更精准的风险评估</div>
+      </div>
+    </div>
+    <button class="btn-form-next" id="btn-to-questionnaire" onclick="goToQuestionnaire()" disabled>▶ 填写体质问卷 →</button>
+    <button class="form-back-btn" onclick="goHome()">← 返回首页</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     页面3：问卷
+═══════════════════════════════════════════ -->
+<div id="page-questionnaire" class="page">
+  <div class="container">
+    <div class="q-header">
+      <div class="q-header-left">
+        <button class="q-back-btn" onclick="showUserInfoPage()">←</button>
+        <div class="q-title-text">中医体质检测</div>
+      </div>
+    </div>
+    <div class="user-summary-card" id="user-summary-card" style="display:none">
+      <div class="us-icon">👤</div>
+      <div class="us-text" id="user-summary-text"></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+      <div class="progress-steps">
+        <div class="progress-step" id="step-0">①</div>
+        <div class="progress-step" id="step-1">②</div>
+        <div class="progress-step" id="step-2">③</div>
+        <div class="progress-step" id="step-3">④</div>
+      </div>
+    </div>
+    <div id="section-container"></div>
+    <div class="q-nav">
+      <button class="btn-nav btn-prev" id="btn-prev" onclick="showUserInfoPage()">← 返回</button>
+      <button class="btn-nav btn-next" id="btn-next" onclick="nextSection()">下一步 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     页面4：AI加载中
+═══════════════════════════════════════════ -->
+<div id="page-ai-loading" class="page">
+  <div class="container" style="max-width:600px;margin:0 auto;text-align:center;padding-top:60px;">
+    <div class="ai-brain-container" style="margin:0 auto 32px;">
+      <div class="ai-brain-ring"></div>
+      <div class="ai-brain-ring-2"></div>
+      <div class="ai-brain-core"><span>🧠</span></div>
+    </div>
+    <div class="ai-loading-title">AI正在分析您的体质</div>
+    <div class="ai-loading-sub">请稍候，结果马上生成...</div>
+    <div class="ai-loading-dots"></div>
+    <div class="ai-steps" style="max-width:320px;margin:0 auto;text-align:left;">
+      <div class="ai-step" id="step-1"><span class="step-icon">📋</span><span class="step-text">整理问卷数据</span><span class="step-spinner"></span><span class="step-check">✅</span></div>
+      <div class="ai-step" id="step-2"><span class="step-icon">🔢</span><span class="step-text">计算体质转化分</span><span class="step-spinner"></span><span class="step-check">✅</span></div>
+      <div class="ai-step" id="step-3"><span class="step-icon">⚖️</span><span class="step-text">结合既往病史评估风险</span><span class="step-spinner"></span><span class="step-check">✅</span></div>
+      <div class="ai-step" id="step-4"><span class="step-icon">🍵</span><span class="step-text">生成食疗调理方案</span><span class="step-spinner"></span><span class="step-check">✅</span></div>
+      <div class="ai-step" id="step-5"><span class="step-icon">🪡</span><span class="step-text">匹配红外检测方案</span><span class="step-spinner"></span><span class="step-check">✅</span></div>
+      <div class="ai-step" id="step-6"><span class="step-icon">📄</span><span class="step-text">生成完整报告</span><span class="step-spinner"></span><span class="step-check">✅</span></div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ═══════════════════════════════════════════
+     页面5：结果
+═══════════════════════════════════════════ -->
+<!-- 悬浮分享按钮 -->
+<div id="float-share-btn" onclick="shareResult()" class="no-screenshot" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);width:50px;height:50px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:25px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(59,130,246,0.4);cursor:pointer;z-index:1000;display:none;" title="分享体质报告">
+  <span style="font-size:20px;">📤</span>
+</div>
+
+<!-- 悬浮底部按钮 -->
+<div id="float-bottom-btns" class="no-screenshot" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:1000;display:none;">
+  <button onclick="goHome()" style="padding:12px 20px;background:linear-gradient(135deg,#6366f1,#4f46e5);border:none;border-radius:25px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(99,102,241,0.4);">🏠 首页</button>
+  <button onclick="startTest()" style="padding:12px 20px;background:linear-gradient(135deg,#3b82f6,#2563eb);border:none;border-radius:25px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(59,130,246,0.4);">🔄 重测</button>
+</div>
+
+<div id="page-result" class="page">
+  <div class="container">
+    <div id="result-summary" style="text-align:center;font-size:14px;color:#94a3b8;margin-bottom:16px;"></div>
+    <div id="result-container"></div>
+    <div class="result-footer">本测试基于《中医体质分类与判定》（GB/T 46939—2025）简化版<br>AI建议仅供参考，不替代专业医疗诊断 · 大秦AI出品</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// 数据来源：GB/T 46939-2025《中医体质分类与判定》
+// 精简版：每种体质3题，共27题
+// 体质内容：大秦AI整理版 · 基于中医九分法（王琦国医大师体系）
+// ══════════════════════════════════════════════════════════
+
+// ── 存储读写 ──
+function saveState() {
+  try {
+    localStorage.setItem('tz_userInfo', JSON.stringify(userInfo));
+    localStorage.setItem('tz_answers', JSON.stringify(answers));
+    localStorage.setItem('tz_section', currentSection);
+    if (resultData) localStorage.setItem('tz_resultData', JSON.stringify(resultData));
+  } catch(e) { console.warn('saveState failed', e); }
+}
+function loadState() {
+  try {
+    const ui = localStorage.getItem('tz_userInfo');
+    if (ui) userInfo = JSON.parse(ui);
+    const ans = localStorage.getItem('tz_answers');
+    if (ans) answers = JSON.parse(ans);
+    const sec = localStorage.getItem('tz_section');
+    if (sec) currentSection = parseInt(sec);
+    const rd = localStorage.getItem('tz_resultData');
+    if (rd) resultData = JSON.parse(rd);
+  } catch(e) { console.warn('loadState failed', e); }
+}
+function clearState() {
+  localStorage.removeItem('tz_userInfo');
+  localStorage.removeItem('tz_answers');
+  localStorage.removeItem('tz_section');
+  localStorage.removeItem('tz_resultData');
+  userInfo = { gender: null, age: null, height: null, weight: null, medicalHistory: [] };
+  answers = new Array(ALL_QUESTIONS.length).fill(null);
+  currentSection = 0;
+  resultData = null;
+  currentQ = 0;
+}
+
+// ── 年龄段-既往病史映射（按国标附录，按性别区分）─
+// 男性：不过敏性鼻炎/哮喘、不过敏性鼻炎/哮喘、不过敏性鼻炎/哮喘、不过敏性鼻炎/哮喘、不过敏性鼻炎/哮喘、不过敏性鼻炎/哮喘
+const AGE_GENDER_MEDICAL_HISTORY = {
+  // 青少年 ≤25岁
+  '≤25_male': [
+    { id: 'rhinitis', label: '过敏性鼻炎/哮喘', risk: 1 },
+    { id: 'gastritis', label: '慢性胃炎/消化不良', risk: 1 },
+    { id: 'acne', label: '痤疮/脂溢性皮炎', risk: 1 },
+    { id: 'anemia', label: '贫血/免疫力低下', risk: 1 },
+    { id: 'myopia', label: '近视/视疲劳', risk: 1 },
+  ],
+  '≤25_female': [
+    { id: 'rhinitis', label: '过敏性鼻炎/哮喘', risk: 1 },
+    { id: 'gastritis', label: '慢性胃炎/消化不良', risk: 1 },
+    { id: 'acne', label: '痤疮/脂溢性皮炎', risk: 1 },
+    { id: 'anemia', label: '贫血/免疫力低下', risk: 1 },
+    { id: 'myopia', label: '近视/视疲劳', risk: 1 },
+    { id: 'dysmenorrhea', label: '痛经/月经不调', risk: 2 },
+  ],
+  // 青壮年 26-40岁
+  '26-40_male': [
+    { id: 'gastritis', label: '慢性胃炎/胃反流', risk: 1 },
+    { id: 'fatty_liver', label: '脂肪肝/高血脂', risk: 2 },
+    { id: 'cervical', label: '颈椎病/腰椎病', risk: 1 },
+    { id: 'migraine', label: '偏头痛/失眠', risk: 1 },
+    { id: 'thyroid', label: '甲状腺结节', risk: 1 },
+    { id: 'hemorrhoid', label: '痔疮/湿疹', risk: 1 },
+  ],
+  '26-40_female': [
+    { id: 'gastritis', label: '慢性胃炎/胃反流', risk: 1 },
+    { id: 'fatty_liver', label: '脂肪肝/高血脂', risk: 2 },
+    { id: 'cervical', label: '颈椎病/腰椎病', risk: 1 },
+    { id: 'migraine', label: '偏头痛/失眠', risk: 1 },
+    { id: 'thyroid', label: '甲状腺结节', risk: 1 },
+    { id: 'breast_nodule', label: '乳腺结节', risk: 2 },
+    { id: 'dysmenorrhea', label: '痛经/宫寒', risk: 2 },
+    { id: 'hemorrhoid', label: '痔疮/湿疹', risk: 1 },
+  ],
+  // 中年 41-55岁
+  '41-55_male': [
+    { id: 'hypertension', label: '高血压', risk: 3 },
+    { id: 'hyperlipidemia', label: '高血脂/高血糖', risk: 3 },
+    { id: 'fatty_liver', label: '脂肪肝/肝功能异常', risk: 2 },
+    { id: 'coronary', label: '冠心病/心肌缺血', risk: 3 },
+    { id: 'cervical', label: '颈椎病/肩周炎', risk: 2 },
+    { id: 'insomnia', label: '失眠/记忆力减退', risk: 2 },
+  ],
+  '41-55_female': [
+    { id: 'hypertension', label: '高血压', risk: 3 },
+    { id: 'hyperlipidemia', label: '高血脂/高血糖', risk: 3 },
+    { id: 'fatty_liver', label: '脂肪肝/肝功能异常', risk: 2 },
+    { id: 'coronary', label: '冠心病/心肌缺血', risk: 3 },
+    { id: 'cervical', label: '颈椎病/肩周炎', risk: 2 },
+    { id: 'menopause', label: '更年期综合征', risk: 2 },
+    { id: 'fibroid', label: '乳腺增生/子宫肌瘤', risk: 2 },
+    { id: 'insomnia', label: '失眠/记忆力减退', risk: 2 },
+  ],
+  // 中老年 56-69岁
+  '56-69_male': [
+    { id: 'hypertension', label: '高血压', risk: 3 },
+    { id: 'coronary', label: '冠心病/脑供血不足', risk: 3 },
+    { id: 'diabetes', label: '糖尿病', risk: 3 },
+    { id: 'arteriosclerosis', label: '动脉硬化', risk: 3 },
+    { id: 'osteoporosis', label: '骨质疏松/骨关节病', risk: 2 },
+    { id: 'prostate', label: '前列腺增生', risk: 2 },
+    { id: 'bronchitis', label: '老慢支/慢性咳嗽', risk: 2 },
+  ],
+  '56-69_female': [
+    { id: 'hypertension', label: '高血压', risk: 3 },
+    { id: 'coronary', label: '冠心病/脑供血不足', risk: 3 },
+    { id: 'diabetes', label: '糖尿病', risk: 3 },
+    { id: 'arteriosclerosis', label: '动脉硬化', risk: 3 },
+    { id: 'osteoporosis', label: '骨质疏松/骨关节病', risk: 2 },
+    { id: 'bronchitis', label: '老慢支/慢性咳嗽', risk: 2 },
+  ],
+  // 老年 ≥70岁
+  '≥70_male': [
+    { id: 'hypertension', label: '高血压/冠心病', risk: 3 },
+    { id: 'diabetes', label: '糖尿病', risk: 3 },
+    { id: 'cerebrovascular', label: '脑梗/脑出血后遗症', risk: 3 },
+    { id: 'osteoporosis', label: '骨质疏松/骨折史', risk: 2 },
+    { id: 'bronchitis', label: '慢支/肺气肿', risk: 2 },
+    { id: 'prostate', label: '前列腺增生', risk: 2 },
+    { id: 'vision', label: '白内障/视力下降', risk: 2 },
+  ],
+  '≥70_female': [
+    { id: 'hypertension', label: '高血压/冠心病', risk: 3 },
+    { id: 'diabetes', label: '糖尿病', risk: 3 },
+    { id: 'cerebrovascular', label: '脑梗/脑出血后遗症', risk: 3 },
+    { id: 'osteoporosis', label: '骨质疏松/骨折史', risk: 2 },
+    { id: 'bronchitis', label: '慢支/肺气肿', risk: 2 },
+    { id: 'vision', label: '白内障/视力下降', risk: 2 },
+  ],
+};
+
+// 按年龄段和性别渲染病史选项
+function renderMHOptionsByAge(age) {
+  const gender = userInfo.gender || 'male';
+  const key = `${age}_${gender}`;
+  const options = AGE_GENDER_MEDICAL_HISTORY[key] || [];
+  const container = document.getElementById('mh-options');
+  if (!container) return;
+  
+  if (options.length === 0) {
+    container.innerHTML = `<div style="text-align:center;color:#94a3b8;font-size:13px;padding:20px 0;">请先选择年龄段</div>`;
+    return;
+  }
+  
+  // 生成按钮HTML（简洁方块样式）
+  let html = options.map(mh => 
+    `<button class="mh-item" data-mh-id="${mh.id}" onclick="toggleMH(this,'${mh.id}')">${mh.label}</button>`
+  ).join('');
+  html += `<button class="mh-item" onclick="toggleMH(this,'none')">以上均无</button>`;
+  
+  container.innerHTML = html;
+  
+  // 恢复已选状态
+  userInfo.medicalHistory.forEach(mhId => {
+    const btn = container.querySelector(`[data-mh-id="${mhId}"]`);
+    if (btn) btn.classList.add('selected');
+    if (mhId === 'none') {
+      const noneBtn = container.querySelector(`[onclick*="'none'"]`);
+      if (noneBtn) noneBtn.classList.add('selected');
+    }
+  });
+}
+
+// ── 用户信息状态 ──
+let userInfo = {
+  gender: 'male',   // 'male' | 'female'
+  age: null,      // '18-30'|'31-40'|'41-50'|'51-60'|'61-70'|'71+'
+  height: 175,
+  weight: 75,
+  medicalHistory: []
+};
+
+// ── 5级量表选项 ──
+const SCORE_LABELS = [
+  { label: '没有', color: '#94A3B8' },
+  { label: '很少', color: '#64748B' },
+  { label: '有时', color: '#2563EB' },
+  { label: '经常', color: '#1D4ED8' },
+  { label: '总是', color: '#1E3A8A' }
+];
+
+// ── 体质主题配色系统 ──
+const THEME_MAP = {
+  '气虚': { bg:'linear-gradient(135deg,#1E3A5F 0%,#2563EB 50%,#3B82F6 100%)', card:'rgba(59,130,246,0.15)', cardBorder:'rgba(59,130,246,0.4)', accent:'#60A5FA', title:'#BFDBFE', tag:'rgba(59,130,246,0.25)', tagText:'#93C5FD', songBg:'rgba(29,78,216,0.2)', songBorder:'rgba(29,78,216,0.4)', songText:'#DBEAFE', aiBg:'linear-gradient(135deg,rgba(59,130,246,0.12),rgba(59,130,246,0.03))', aiBorder:'rgba(59,130,246,0.35)', aiAccent:'#3B82F6', riskBg:'rgba(239,68,68,0.12)', riskBorder:'rgba(239,68,68,0.3)', riskText:'#FCA5A5' },
+  '阳虚': { bg:'linear-gradient(135deg,#1E1B4B 0%,#3730A3 50%,#6366F1 100%)', card:'rgba(99,102,241,0.15)', cardBorder:'rgba(99,102,241,0.4)', accent:'#818CF8', title:'#C7D2FE', tag:'rgba(99,102,241,0.25)', tagText:'#A5B4FC', songBg:'rgba(67,56,202,0.2)', songBorder:'rgba(67,56,202,0.4)', songText:'#E0E7FF', aiBg:'linear-gradient(135deg,rgba(99,102,241,0.12),rgba(99,102,241,0.03))', aiBorder:'rgba(99,102,241,0.35)', aiAccent:'#6366F1', riskBg:'rgba(239,68,68,0.12)', riskBorder:'rgba(239,68,68,0.3)', riskText:'#FCA5A5' },
+  '阴虚': { bg:'linear-gradient(135deg,#4C1D3A 0%,#BE185D 50%,#EC4899 100%)', card:'rgba(236,72,153,0.15)', cardBorder:'rgba(236,72,153,0.4)', accent:'#F472B6', title:'#FBCFE8', tag:'rgba(236,72,153,0.25)', tagText:'#F9A8D4', songBg:'rgba(190,24,93,0.2)', songBorder:'rgba(190,24,93,0.4)', songText:'#FCE7F3', aiBg:'linear-gradient(135deg,rgba(236,72,153,0.12),rgba(236,72,153,0.03))', aiBorder:'rgba(236,72,153,0.35)', aiAccent:'#EC4899', riskBg:'rgba(239,68,68,0.12)', riskBorder:'rgba(239,68,68,0.3)', riskText:'#FCA5A5' },
+  '痰湿': { bg:'linear-gradient(135deg,#431407 0%,#C2410C 50%,#F97316 100%)', card:'rgba(249,115,22,0.15)', cardBorder:'rgba(249,115,22,0.4)', accent:'#FB923C', title:'#FED7AA', tag:'rgba(249,115,22,0.25)', tagText:'#FDBA74', songBg:'rgba(194,65,12,0.2)', songBorder:'rgba(194,65,12,0.4)', songText:'#FFEDD5', aiBg:'linear-gradient(135deg,rgba(249,115,22,0.12),rgba(249,115,22,0.03))', aiBorder:'rgba(249,115,22,0.35)', aiAccent:'#F97316', riskBg:'rgba(239,68,68,0.12)', riskBorder:'rgba(239,68,68,0.3)', riskText:'#FCA5A5' },
+  '湿热': { bg:'linear-gradient(135deg,#14532D 0%,#15803D 50%,#22C55E 100%)', card:'rgba(34,197,94,0.15)', cardBorder:'rgba(34,197,94,0.4)', accent:'#4ADE80', title:'#BBF7D0', tag:'rgba(34,197,94,0.25)', tagText:'#86EFAC', songBg:'rgba(21,128,61,0.2)', songBorder:'rgba(21,128,61,0.4)', songText:'#DCFCE7', aiBg:'linear-gradient(135deg,rgba(34,197,94,0.12),rgba(34,197,94,0.03))', aiBorder:'rgba(34,197,94,0.35)', aiAccent:'#22C55E', riskBg:'rgba(234,179,8,0.12)', riskBorder:'rgba(234,179,8,0.3)', riskText:'#FDE047' },
+  '血瘀': { bg:'linear-gradient(135deg,#450A0A 0%,#991B1B 50%,#EF4444 100%)', card:'rgba(239,68,68,0.15)', cardBorder:'rgba(239,68,68,0.5)', accent:'#F87171', title:'#FECACA', tag:'rgba(239,68,68,0.3)', tagText:'#FCA5A5', songBg:'rgba(185,28,28,0.25)', songBorder:'rgba(185,28,28,0.5)', songText:'#FEE2E2', aiBg:'linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.05))', aiBorder:'rgba(239,68,68,0.5)', aiAccent:'#EF4444', riskBg:'rgba(220,38,38,0.2)', riskBorder:'rgba(220,38,38,0.5)', riskText:'#FCA5A5' },
+  '气郁': { bg:'linear-gradient(135deg,#2E1065 0%,#5B21B6 50%,#8B5CF6 100%)', card:'rgba(139,92,246,0.15)', cardBorder:'rgba(139,92,246,0.4)', accent:'#A78BFA', title:'#DDD6FE', tag:'rgba(139,92,246,0.25)', tagText:'#C4B5FD', songBg:'rgba(109,40,217,0.2)', songBorder:'rgba(109,40,217,0.4)', songText:'#EDE9FE', aiBg:'linear-gradient(135deg,rgba(139,92,246,0.12),rgba(139,92,246,0.03))', aiBorder:'rgba(139,92,246,0.35)', aiAccent:'#8B5CF6', riskBg:'rgba(234,179,8,0.12)', riskBorder:'rgba(234,179,8,0.3)', riskText:'#FDE047' },
+  '特禀': { bg:'linear-gradient(135deg,#134E4A 0%,#0F766E 50%,#14B8A6 100%)', card:'rgba(20,184,166,0.15)', cardBorder:'rgba(20,184,166,0.4)', accent:'#2DD4BF', title:'#99F6E4', tag:'rgba(20,184,166,0.25)', tagText:'#5EEAD4', songBg:'rgba(15,118,110,0.2)', songBorder:'rgba(15,118,110,0.4)', songText:'#CCFBF1', aiBg:'linear-gradient(135deg,rgba(20,184,166,0.12),rgba(20,184,166,0.03))', aiBorder:'rgba(20,184,166,0.35)', aiAccent:'#14B8A6', riskBg:'rgba(234,179,8,0.12)', riskBorder:'rgba(234,179,8,0.3)', riskText:'#FDE047' },
+  '平和': { bg:'linear-gradient(135deg,#166534 0%,#15803D 50%,#22C55E 100%)', card:'rgba(34,197,94,0.12)', cardBorder:'rgba(34,197,94,0.3)', accent:'#4ADE80', title:'#BBF7D0', tag:'rgba(34,197,94,0.2)', tagText:'#86EFAC', songBg:'rgba(21,128,61,0.15)', songBorder:'rgba(21,128,61,0.3)', songText:'#DCFCE7', aiBg:'linear-gradient(135deg,rgba(34,197,94,0.1),rgba(34,197,94,0.02))', aiBorder:'rgba(34,197,94,0.3)', aiAccent:'#22C55E', riskBg:'rgba(34,197,94,0.12)', riskBorder:'rgba(34,197,94,0.3)', riskText:'#86EFAC' }
+};
+
+// ── 9种体质数据（来源：三合一版本.txt / GB/T 46939-2025）─
+const CONSTITUTIONS = [
+  {
+    id: '气虚', name: '气虚质', emoji: '💨', color: '#3B82F6',
+    risk: 4, riskLabel: '中高风险', riskBg: '#DBEAFE', riskColor: '#1D4ED8',
+    itemCount: 3,
+    song: '易患感冒易疲倦，气短心慌头晕沉。<br>喜静懒言身无力，稍一活动汗全身。',
+    symptoms: ['容易疲乏、气短懒言', '稍动即喘、易出虚汗', '声音低弱、易感冒'],
+   发病倾向: '易感冒、内脏下垂、肥胖、骨质疏松、慢性疲劳、焦虑症；病后康复慢',
+    diet: { wuGu:'粳米（粥饭为世间第一补人之物）', wuGuo:'葡萄（益气倍力、久食轻身延年）', wuSu:'南瓜（补中益气、解毒杀虫）', wuXu:'牛肉（补气与黄芪同功）', haiChan:'鲢鱼（温中益气）', zhongYao:'四君子汤、补中益气汤、山药' },
+    lifestyle: '健补脾胃，益气固表；劳逸结合，睡眠充足；春冬注意保暖',
+    irFeature: '大椎穴、命门穴区域低温暗区；整体热量偏低',
+    recommended: '元气食疗方（正合金丹）+ 九针靶向通脉（补气通络）',
+    desc: '元气不足，疲乏、气短、自汗为主要特征'
+  },
+  {
+    id: '阳虚', name: '阳虚质', emoji: '🥶', color: '#6366F1',
+    risk: 4, riskLabel: '中高风险', riskBg: '#E0E7FF', riskColor: '#4338CA',
+    itemCount: 3,
+    song: '畏寒肢冷易感冒，怕吹冷风和空调。<br>穿衣饮食皆需热，稍冷即觉吃不消。',
+    symptoms: ['怕冷、手脚冰凉', '喜温热、精神不振', '腰膝酸软、夜尿多'],
+    发病倾向: '痰饮、肿胀、泄泻、骨质疏松、慢性疲劳、寒性痛经、膝关节炎；易从寒化',
+    diet: { wuGu:'糯米（脾肺虚寒者宜之）', wuGuo:'大枣（补中益气、养心神）', wuSu:'韭菜（温中、行气、解毒）', wuXu:'羊肉（甘热，补气血之虚）', haiChan:'虾仁（补肾、壮阳）', zhongYao:'肉苁蓉、锁阳、巴戟天、干姜、鹿茸、金匮肾气丸、右归丸' },
+    lifestyle: '温补脾肾，避寒保暖；多食性热食物；冬季多运动；保证睡眠；避免劳累过度',
+    irFeature: '督脉区域大面积低温；四肢末梢温度极低',
+    recommended: '温阳食疗 + 九针靶向通脉（温阳散寒）',
+    desc: '阳气不足，畏寒怕冷、手足不温为主要特征'
+  },
+  {
+    id: '阴虚', name: '阴虚质', emoji: '🔥', color: '#EC4899',
+    risk: 4, riskLabel: '中高风险', riskBg: '#FCE7F3', riskColor: '#BE185D',
+    itemCount: 3,
+    song: '两颧潮红身烘热，手心脚心常发烫。<br>口鼻眼睛皮肤燥，唇红便秘小便黄。',
+    symptoms: ['手足心热、口干咽燥', '夜间盗汗、烦躁失眠', '眼睛干涩、大便干燥'],
+    发病倾向: '虚劳、失眠、糖尿病、高血压、偏头痛、便秘、干眼症；易从热化',
+    diet: { wuGu:'小米（肾之谷，气寒下渗）', wuGuo:'桑椹（单食能止消渴）', wuSu:'枸杞叶（滋养肺肾）', wuXu:'猪皮（清虚热、润肌肤）', haiChan:'蛤蜊（滋阴明目）', zhongYao:'百合、枸杞、麦冬、天冬、山萸肉、六味地黄丸、一贯煎' },
+    lifestyle: '滋阴生津，清虚热；作息规律，睡眠充足；少烦躁动怒，忌熬夜与辛辣',
+    irFeature: '头面部、胸部局部高温；手心脚心高温',
+    recommended: '滋阴降火食疗（正合金丹加减方）+ 红外检测定位',
+    desc: '阴液亏少，口燥咽干、手足心热等虚热为主要特征'
+  },
+  {
+    id: '痰湿', name: '痰湿质', emoji: '💧', color: '#F97316',
+    risk: 4, riskLabel: '高风险', riskBg: '#FFEDD5', riskColor: '#C2410C',
+    itemCount: 3,
+    song: '满面油光大肚汉，胸闷腹胀身不舒。<br>稍动易汗眼睑肿，痰多口黏咽中堵。',
+    symptoms: ['体型偏胖、腹部肥满', '面部油腻、痰多胸闷', '大便黏腻、身重不爽'],
+    发病倾向: '消渴、中风、胸痹、肥胖、高血压、高血脂、脂肪肝、高尿酸、多囊卵巢等',
+    diet: { wuGu:'扁豆（健脾益气、消暑化湿）', wuGuo:'梨（润肺清心、消痰降火）', wuSu:'冬瓜（利水、消痰、清热、解毒）', wuXu:'（痰湿质少吃肥甘厚味）', haiChan:'鲫鱼（健脾利水）', zhongYao:'荷叶、二陈汤、参苓白术散' },
+    lifestyle: '健脾利水，祛湿化痰；清淡素食为主；多锻炼至汗出；环境干燥清爽；晚餐宜少',
+    irFeature: '腹部、颈部高温堆积区；脂肪厚处温度异常偏高',
+    recommended: '化痰祛湿食疗 + 九针靶向通脉（祛湿化痰）',
+    desc: '痰湿凝聚，以肥胖、腹部肥满、口黏苔腻为主要特征'
+  },
+  {
+    id: '湿热', name: '湿热质', emoji: '🌿', color: '#22C55E',
+    risk: 3, riskLabel: '中风险', riskBg: '#DCFCE7', riskColor: '#15803D',
+    itemCount: 3,
+    song: '油光满面生痤疮，口苦口臭小便黄。<br>大便黏滞解不尽，阴部潮湿白带黄。',
+    symptoms: ['面部油腻、口苦口臭', '大便黏滞、易生痤疮', '小便黄赤、皮肤瘙痒'],
+    发病倾向: '痤疮、黄疸、热淋、失眠、脂肪肝、肝硬化、肠息肉等',
+    diet: { wuGu:'绿豆（消热解毒、消暑、利水）', wuGuo:'西瓜（解热病大渴）', wuSu:'苦瓜（泻六经实火，清暑止渴）', wuXu:'（湿热质少食肥甘厚味）', haiChan:'海蜇（化痰消积）；鲤鱼（长利小便）', zhongYao:'菊花、茵陈蒿汤、龙胆泻肝汤（短期）' },
+    lifestyle: '清热利湿，疏通气机；清淡饮食，甘寒之品；加强锻炼；环境通风干燥；忌辛辣酒酪',
+    irFeature: '面部、胸背部散在高温点；湿热郁积区温度偏高',
+    recommended: '清热祛湿食疗 + 九针靶向通脉（清热利湿）',
+    desc: '湿热内蕴，以面垢油光、口苦、苔黄腻为主要特征'
+  },
+  {
+    id: '血瘀', name: '血瘀质', emoji: '🩸', color: '#EF4444',
+    risk: 5, riskLabel: '极高风险', riskBg: '#FEE2E2', riskColor: '#B91C1C',
+    itemCount: 3,
+    song: '面色晦暗斑黄褐，皮下无故有瘀斑。<br>唇黯健忘黑眼眶，身有疼痛常不安。',
+    symptoms: ['面色晦暗、嘴唇发紫', '舌下青筋、健忘刺痛', '皮肤干燥、易现瘀斑'],
+    发病倾向: '癥瘕、痛证、血证、心脑血管病、突发性耳聋、子宫内膜异位症',
+    diet: { wuGu:'燕麦（健脾益气、补虚润肠）', wuGuo:'山楂（化饮食、健脾胃、行气消瘀）', wuSu:'藕（生食生津、化瘀、止渴；熟食补血）', wuXu:'（血瘀质少食生冷）', haiChan:'海藻（软坚、消痰、利水）', zhongYao:'玫瑰花、血府逐瘀汤、桃红四物汤' },
+    lifestyle: '活血行气，疏通经络；活血行气食物；多做关节活动运动；保持心情舒畅；避免生冷',
+    irFeature: '局部低温"冷斑"；脑部供血区低温；热像图左右不对称',
+    recommended: '红外定位 → 九针靶向通脉 → 舌下逐淤通络术',
+    desc: '血行不畅，肤色晦暗、舌质紫黯为主要特征'
+  },
+  {
+    id: '气郁', name: '气郁质', emoji: '🌙', color: '#8B5CF6',
+    risk: 3, riskLabel: '中风险', riskBg: '#EDE9FE', riskColor: '#6D28D9',
+    itemCount: 3,
+    song: '闷闷不乐疑神鬼，焦虑不安易紧张。<br>多愁善感心脆弱，唉声叹气常失望。',
+    symptoms: ['情绪低落、闷闷不乐', '胸闷叹气、咽部异物感', '睡眠差、多愁善感'],
+    发病倾向: '郁证（抑郁）、脏躁、梅核气、瘿瘤、失眠、认知衰弱',
+    diet: { wuGu:'荞麦（开胃宽松，益气力）', wuGuo:'橙（开胃理气，止渴润肺）', wuSu:'菠菜（开胸膈，通肠胃，润燥活血）', wuXu:'（气郁质宜食芽类绿叶）', haiChan:'海带（消痰软坚、利水消肿）', zhongYao:'合欢花、逍遥散、柴胡疏肝散' },
+    lifestyle: '疏肝解郁，调畅气机；多食芽类、绿叶类、行气类食物；胁肋保暖；调养心神',
+    irFeature: '胸胁区域不规则高温或低温交替；肝区温度异常',
+    recommended: '疏肝理气食疗 + 情志调理 + 九针靶向通脉',
+    desc: '气机郁滞，神情抑郁、忧虑脆弱为主要特征'
+  },
+  {
+    id: '特禀', name: '特禀质', emoji: '🌸', color: '#14B8A6',
+    risk: 2, riskLabel: '一般风险', riskBg: '#CCFBF1', riskColor: '#0F766E',
+    itemCount: 3,
+    song: '冷热异味易咳喘，喷嚏流涕鼻敏感。<br>皮肤划痕起风团，或见皮肤有瘀斑。',
+    symptoms: ['过敏体质、荨麻疹', '鼻炎哮喘、皮肤敏感', '适应能力差、易感冒'],
+    发病倾向: '哮喘、荨麻疹、花粉症、药物过敏等',
+    diet: { wuGu:'粳米（五谷之长）', wuGuo:'苹果（性平，生津润肺、除烦开胃）', wuSu:'小白菜（甘平养胃、生津解渴）', wuXu:'猪肉（补肾、滋肝阴、润肌肤）', haiChan:'（特禀质注意排查过敏原）', zhongYao:'玉屏风散、消风散（过敏期）、灵芝' },
+    lifestyle: '扶正固表，避开过敏原；荤素搭配；注意季节变化；及时预防',
+    irFeature: '皮肤过敏区局部高温；鼻腔区域热像异常',
+    recommended: '固表益气调理方案 + 过敏原检测',
+    desc: '禀赋不耐，以过敏反应为主要特征'
+  },
+  {
+    id: '平和', name: '平和质', emoji: '☀️', color: '#22C55E',
+    risk: 1, riskLabel: '低风险', riskBg: '#DCFCE7', riskColor: '#15803D',
+    itemCount: 3,
+    song: '精力充沛不疲倦，睡到天亮不失眠。<br>记忆力好不健忘，适应外界能力强。',
+    symptoms: ['精力充沛、睡眠良好', '面色润泽、不易生病', '适应力强、心态平和'],
+    发病倾向: '平素患病较少',
+    diet: { wuGu:'粳米、燕麦（性味平和）', wuGuo:'苹果（生津润肺、除烦开胃）', wuSu:'西兰花、番茄、莴苣、木耳、甘薯', wuXu:'（平和质均衡多样即可）', haiChan:'（平和质无需特殊海产）', zhongYao:'（平和质无需特殊中药调理）' },
+    lifestyle: '保持平衡，忌过补过泄；食饮有节；起居有常；不妄作劳；八段锦、太极等适度运动',
+    irFeature: '全身热分布均匀对称，四肢末端温差<2℃',
+    recommended: '定期检测维护，保持健康生活方式',
+    desc: '阴阳气血调和，体态适中、面色润泽、精力充沛为主要特征'
+  }
+];
+
+// ── 问卷结构（按GB/T 46939-2025标准，共27题）─
+// 计分规则：1=没有，2=很少，3=有时，4=经常，5=总是
+// 转化分公式：[(原始分 - 条目数) / (条目数 × 4)] × 100
+// 平和质条目需逆向计分（表中带*的题目）
+const SECTIONS = [
+  {
+    title: '平和·气虚判定', emoji: '☀️',
+    badgeColor: '#DCFCE7', badgeTextColor: '#16A34A',
+    questions: [
+      { text: '您精力充沛吗？', type: '平和', reverse: true },
+      { text: '您容易疲乏吗？', type: '气虚' },
+      { text: '您容易气短（呼吸短促、接不上气）吗？', type: '气虚' },
+      { text: '您容易心慌吗？', type: '气虚' },
+      { text: '您比一般人更怕冷、怕吹冷空调或冷风吗？', type: '阳虚' },
+      { text: '您说话声音低弱无力吗？', type: '气虚' }
+    ]
+  },
+  {
+    title: '阳虚·阴虚判定', emoji: '🔥',
+    badgeColor: '#FEF2F2', badgeTextColor: '#EF4444',
+    questions: [
+      { text: '您胃脘部、背部或腰膝部怕冷吗？', type: '阳虚' },
+      { text: '您感到怕冷、衣服比别人穿得多吗？', type: '阳虚' },
+      { text: '您感觉身体、脸上发热吗？', type: '阴虚' },
+      { text: '您皮肤或口唇干吗？', type: '阴虚' },
+      { text: '您面部两颧潮红或偏红吗？', type: '阴虚' }
+    ]
+  },
+  {
+    title: '痰湿·湿热·血瘀判定', emoji: '💧',
+    badgeColor: '#FFEDD5', badgeTextColor: '#EA580C',
+    questions: [
+      { text: '您感到身体沉重、不轻松或不爽快吗？', type: '痰湿' },
+      { text: '您腹部肥满松软吗？', type: '痰湿' },
+      { text: '您嘴里有黏黏的感觉吗？', type: '痰湿' },
+      { text: '您面部或鼻部有油腻感或者油亮发光吗？', type: '湿热' },
+      { text: '您小便时尿道有发热感、尿色浓（深）吗？', type: '湿热' },
+      { text: '您带下色黄（白带颜色发黄）吗？', type: '湿热', gender: 'female' },
+      { text: '您的阴囊部位潮湿吗？', type: '湿热', gender: 'male' },
+      { text: '您身体上有哪里疼痛吗？', type: '血瘀' },
+      { text: '您面色晦暗或容易出现褐斑吗？', type: '血瘀' },
+      { text: '您口唇颜色偏暗吗？', type: '血瘀' }
+    ]
+  },
+  {
+    title: '气郁·特禀判定', emoji: '😔',
+    badgeColor: '#E0E7FF', badgeTextColor: '#4F46E5',
+    questions: [
+      { text: '您感到闷闷不乐、情绪低沉吗？', type: '气郁' },
+      { text: '您容易精神紧张、焦虑不安吗？', type: '气郁' },
+      { text: '您多愁善感、感情脆弱吗？', type: '气郁' },
+      { text: '您没有感冒时也会打喷嚏吗？', type: '特禀' },
+      { text: '您容易过敏（对药物、食物、气味、花粉或在季节交替、气候变化时）吗？', type: '特禀' },
+      { text: '您的皮肤容易起荨麻疹（风团、风疹块、风疙瘩）吗？', type: '特禀' },
+      { text: '您的皮肤一抓就红，并出现抓痕吗？', type: '特禀' }
+    ]
+  }
+];
+
+
+const ALL_QUESTIONS_ORIGINAL = SECTIONS.flatMap(s => s.questions);
+function getAllQuestions() {
+  const gender = userInfo.gender;
+  return ALL_QUESTIONS_ORIGINAL.filter(q => !q.gender || q.gender === gender);
+}
+const ALL_QUESTIONS = getAllQuestions();
+
+// ── 状态 ──
+let answers = new Array(ALL_QUESTIONS.length).fill(null);
+let currentSection = 0;
+let resultData = null;
+
+// ========== 预设测试数据（直接显示结果）==========
+let PRESET_MODE = false; // 设为true则显示预设结果
+const presetUserInfo = { gender: '男士', age: '31-45岁', height: '175cm', weight: '85kg', medicalHistory: [] };
+const presetResultData = {
+  primaryType: '痰湿质', primaryScore: 78, riskLevel: 4, riskText: '心脑血管风险偏高',
+  sortedScores: [
+    {id:'tanshi',name:'痰湿',score:88,transformed:78,color:'#eab308'},
+    {id:'shire',name:'湿热',score:55,transformed:40,color:'#8b5cf6'},
+    {id:'xueyu',name:'血瘀',score:48,transformed:33,color:'#ef4444'},
+    {id:'qixu',name:'气虚',score:42,transformed:27,color:'#22c55e'},
+    {id:'yangxu',name:'阳虚',score:38,transformed:23,color:'#3b82f6'},
+    {id:'yinxu',name:'阴虚',score:45,transformed:30,color:'#14b8a6'},
+    {id:'qiyu',name:'气郁',score:35,transformed:20,color:'#f97316'},
+    {id:'pinghe',name:'平和',score:28,transformed:13,color:'#06b6d4'},
+    {id:'tebin',name:'特禀',score:22,transformed:8,color:'#ec4899'}
+  ],
+  aiAnalysis: '根据您的问卷结果和健康信息，您属于典型的痰湿质体型。\n痰湿质是指人体水液代谢失常，痰湿内蕴，以形体肥胖、腹部肥满、口黏苔腻等为主要特征的体质状态。\n痰湿质人群脾胃运化功能减弱，水湿内停，久则化为痰浊，阻碍气血运行，增加心脑血管疾病风险。\n痰湿体质者血液黏稠度偏高，血管壁易沉积脂质，是心梗、脑梗的高危人群。',
+  dietPlan: '宜多食用薏苡仁、赤小豆、冬瓜、芹菜、白萝卜、荷叶等健脾利湿食物。\n忌食甜腻、油腻、重口味食物如蛋糕、肥肉、奶茶、油炸食品等。\n建议每日饮用荷叶山楂茶（荷叶3克、山楂5克、决明子3克），餐后半小时服用。\n饮食宜清淡，每餐七八分饱，细嚼慢咽有助脾胃运化。',
+  infraFeatures: ['腹部区域能量偏高（痰湿聚集）', '面部T区油腻感', '下肢循环偏弱'],
+  services: ['红外热成像体质检测（可视化验证痰湿聚集区域）']
+};
+// ==============================================
+
+// ── 导航 ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+  // 结果页显示悬浮按钮
+  const shareBtn = document.getElementById('float-share-btn');
+  const bottomBtns = document.getElementById('float-bottom-btns');
+  if (shareBtn) shareBtn.style.display = id === 'page-result' ? 'flex' : 'none';
+  if (bottomBtns) bottomBtns.style.display = id === 'page-result' ? 'flex' : 'none';
+}
+function goHome() { clearState(); showPage('page-landing'); }
+
+function startTest() {
+  // 保存当前性别（clearState 会重置 userInfo）
+  const savedGender = userInfo.gender;
+  clearState(); // 彻底清空所有状态，全新开始
+  // 恢复性别
+  userInfo.gender = savedGender;
+  // 重新根据性别计算题目列表
+  ALL_QUESTIONS.length = 0;
+  SECTIONS.forEach(s => {
+    s.questions.forEach(q => {
+      // 题目没有性别限制，或者题目的性别与用户匹配
+      if (!q.gender || q.gender === userInfo.gender) {
+        ALL_QUESTIONS.push(q);
+      }
+    });
+  });
+  console.log('计算题目列表，性别:', userInfo.gender, '题目数:', ALL_QUESTIONS.length);
+  answers = new Array(ALL_QUESTIONS.length).fill(null);
+  currentSection = 0;
+  resultData = null;
+  currentQ = 0;
+  PRESET_MODE = false; // 重置为正常答题模式
+  // 调试：显示实际题目数量
+  console.log('性别:', userInfo.gender, '题目数:', ALL_QUESTIONS.length);
+  // 显示用户信息页
+  showPage('page-user-info');
+}
+
+function restoreUserInfoUI() {
+  // 恢复性别
+  if (userInfo.gender) {
+    document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+    const g = document.getElementById('gender-' + userInfo.gender);
+    if (g) g.classList.add('selected');
+  }
+  // 恢复年龄
+  if (userInfo.age) {
+    document.querySelectorAll('.age-btn').forEach(b => b.classList.remove('selected'));
+    const a = document.getElementById('age-' + userInfo.age);
+    if (a) a.classList.add('selected');
+  }
+  // 恢复身高体重
+  if (userInfo.height) document.getElementById('height-input').value = userInfo.height;
+  if (userInfo.weight) document.getElementById('weight-input').value = userInfo.weight;
+  // 恢复健康选项
+  userInfo.medicalHistory.forEach(mh => {
+    const btn = document.querySelector(`[onclick*="'${mh}']"]`);
+    if (btn) btn.classList.add('selected');
+  });
+  checkFormComplete();
+}
+
+// 页面加载时自动恢复上次进度
+document.addEventListener('DOMContentLoaded', () => {
+  // 预设模式：先清空状态，直接显示结果（跳过localStorage）
+  if (PRESET_MODE) {
+    clearState(); // 清空localStorage
+    Object.assign(userInfo, presetUserInfo);
+    resultData = { ...presetResultData };
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-result').classList.add('active');
+    renderPresetResult();
+    return;
+  }
+  
+  loadState();
+  // 不自动恢复，直接显示首页
+  showPage('page-landing');
+  // 初始化表单按钮状态
+  checkFormComplete();
+  // 如果已选择年龄段，渲染对应的病史选项
+  if (userInfo.age) {
+    renderMHOptionsByAge(userInfo.age);
+    // 恢复病史选项的选中状态
+    const container = document.getElementById('mh-options');
+    if (container) {
+      userInfo.medicalHistory.forEach(mhId => {
+        const btn = container.querySelector(`[data-mh-id="${mhId}"]`);
+        if (btn) btn.classList.add('selected');
+      });
+      // 如果有"无"，选中它
+      if (userInfo.medicalHistory.includes('none')) {
+        document.querySelectorAll('.mh-item').forEach(i => {
+          if (i.textContent === '以上均无') i.classList.add('selected');
+        });
+      }
+    }
+  }
+});
+
+function showUserInfoPage() {
+  showPage('page-user-info');
+}
+
+function selectGender(val) {
+  userInfo.gender = val;
+  saveState();
+  document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('gender-' + val).classList.add('selected');
+  // 根据性别设置身高体重默认值
+  if (val === 'male') {
+    document.getElementById('height-input').value = 175;
+    document.getElementById('weight-input').value = 75;
+    userInfo.height = 175;
+    userInfo.weight = 75;
+  } else {
+    document.getElementById('height-input').value = 165;
+    document.getElementById('weight-input').value = 55;
+    userInfo.height = 165;
+    userInfo.weight = 55;
+  }
+  // 如果已选择年龄段，重新渲染病史选项（性别影响疾病列表）
+  if (userInfo.age) {
+    userInfo.medicalHistory = []; // 清空，重新选择
+    renderMHOptionsByAge(userInfo.age);
+  }
+  saveState();
+  checkFormComplete();
+}
+
+
+function selectAge(val) {
+  if (!val) return;
+  userInfo.age = val;
+  userInfo.medicalHistory = []; // 清空病史，重新选择
+  saveState();
+  renderMHOptionsByAge(val); // 根据年龄段渲染对应疾病选项
+  // 年龄选择后边框变亮
+  const selectEl = document.getElementById('age-select');
+  if (selectEl) {
+    selectEl.style.borderColor = 'var(--indigo)';
+    selectEl.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.2)';
+  }
+  checkFormComplete();
+}
+
+
+function toggleMH(el, val) {
+  console.log('toggleMH clicked:', val, el);
+  if (val === 'none') {
+    // 选"无"时清空其他
+    userInfo.medicalHistory = ['none'];
+    document.querySelectorAll('.mh-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+  } else {
+    // 取消"无"
+    document.querySelectorAll('.mh-item').forEach(i => {
+      if (i.textContent.trim() === '以上均无') i.classList.remove('selected');
+    });
+    const idx = userInfo.medicalHistory.indexOf(val);
+    if (idx >= 0) {
+      userInfo.medicalHistory.splice(idx, 1);
+      el.classList.remove('selected');
+    } else {
+      userInfo.medicalHistory.push(val);
+      el.classList.add('selected');
+    }
+    // 清空则自动选"无"
+    if (userInfo.medicalHistory.length === 0) {
+      document.querySelectorAll('.mh-item').forEach(i => {
+        if (i.textContent.trim() === '以上均无') {
+          i.classList.add('selected');
+        }
+      });
+      userInfo.medicalHistory = ['none'];
+    }
+  }
+  saveState();
+  checkFormComplete();
+}
+
+function checkFormComplete() {
+  const h = document.getElementById('height-input').value.trim();
+  const w = document.getElementById('weight-input').value.trim();
+  userInfo.height = h ? parseInt(h) : null;
+  userInfo.weight = w ? parseInt(w) : null;
+  saveState();
+  
+  // 检查三个必填项：性别、年龄、既往病史（至少选一个或选"以上均无"）
+  const hasGender = !!userInfo.gender;
+  const hasAge = !!userInfo.age;
+  const hasMH = userInfo.medicalHistory && userInfo.medicalHistory.length > 0;
+  
+  // 调试
+  console.log('checkFormComplete:', { hasGender, hasAge, hasMH, gender: userInfo.gender, age: userInfo.age, mh: userInfo.medicalHistory });
+  
+  // 更新section边框样式
+  const genderBtns = document.querySelectorAll('.gender-btn');
+  const ageSelect = document.getElementById('age-select');
+  const mhSection = document.getElementById('mh-options');
+  
+  // 性别按钮不需要额外边框样式，内部已有selected状态
+  if (ageSelect) {
+    ageSelect.style.borderColor = hasAge ? 'rgba(99,102,241,0.8)' : 'rgba(255,255,255,0.15)';
+  }
+  if (mhSection) {
+    mhSection.style.border = hasMH ? '1px solid rgba(99,102,241,0.5)' : 'none';
+    mhSection.style.borderRadius = '12px';
+    mhSection.style.padding = '4px 0';
+  }
+  
+  const btn = document.getElementById('btn-to-questionnaire');
+  const canSubmit = hasGender && hasAge && hasMH;
+  btn.disabled = !canSubmit;
+  console.log('按钮状态:', canSubmit ? '可点击' : '禁用中');
+}
+
+function goToQuestionnaire() {
+  renderSection(currentSection);  // 恢复当前进度，而非从0开始
+  updateProgress();
+  updateUserSummary();
+  showPage('page-questionnaire');
+}
+
+function updateUserSummary() {
+  const genderMap = { male:'男士', female:'女士', other:'不便透露' };
+  const card = document.getElementById('user-summary-card');
+  const text = document.getElementById('user-summary-text');
+  if (userInfo.gender && userInfo.age) {
+    let info = `<strong>${genderMap[userInfo.gender]}</strong> · ${userInfo.age}岁`;
+    if (userInfo.height && userInfo.weight) {
+      info += ` · 身高${userInfo.height}cm 体重${userInfo.weight}kg`;
+    }
+    if (userInfo.medicalHistory.length > 0 && userInfo.medicalHistory[0] !== 'none') {
+      info += ` · 有既往病史`;
+    }
+    text.innerHTML = info;
+    card.style.display = 'flex';
+  }
+}
+
+function getStartIndex(idx) {
+  let i = 0; for (let j = 0; j < idx; j++) i += SECTIONS[j].questions.length; return i;
+}
+
+function renderSection(idx) {
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  const sec = SECTIONS[idx];
+  // 只保留性别匹配的题目
+  const filteredQuestions = sec.questions.filter(q => !q.gender || q.gender === userInfo.gender);
+  // 计算实际题目索引（基于过滤后的列表）
+  let actualStartIdx = 0;
+  for (let j = 0; j < idx; j++) {
+    const filteredSecQ = SECTIONS[j].questions.filter(q => !q.gender || q.gender === userInfo.gender);
+    actualStartIdx += filteredSecQ.length;
+  }
+  const container = document.getElementById('section-container');
+  container.innerHTML = `
+    <div class="section-title">
+      <div class="section-badge" style="background:${sec.badgeColor};color:${sec.badgeTextColor}">${sec.emoji}</div>
+      <div>
+        <div class="section-label">${sec.title}</div>
+        <div class="section-desc">根据您近一年的实际感受作答 · 单选</div>
+      </div>
+      <div class="section-indicator">${idx+1}/${SECTIONS.length}</div>
+    </div>
+      ${filteredQuestions.map((q, i) => {
+      const qIdx = actualStartIdx + i;
+      const sel = answers[qIdx];
+      return `<div class="question-card" data-qidx="${qIdx}">
+        <div class="q-text">${qIdx+1}. ${q.text}</div>
+        <div class="options">
+          ${[1,2,3,4,5].map(v => `<button class="option-btn ${sel===v?'selected':''}" onclick="selectOption(${qIdx},${v})">
+            <div class="opt-score">${v}</div>
+            <div class="opt-label">${SCORE_LABELS[v-1].label}</div>
+          </button>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+  `;
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  // 更新上一页按钮
+  if (idx === 0) {
+    btnPrev.textContent = '← 返回信息';
+    btnPrev.onclick = () => showUserInfoPage();
+    btnPrev.disabled = false;
+  } else {
+    btnPrev.textContent = '← 上一页';
+    btnPrev.onclick = () => prevSection();
+    btnPrev.disabled = false;
+  }
+  // 更新下一页按钮
+  btnNext.textContent = idx === SECTIONS.length - 1 ? '🤖 AI分析结果' : '下一步 →';
+}
+
+function selectOption(qIdx, val) {
+  answers[qIdx] = val;
+  saveState();
+  // 通过data-qidx属性查找对应的question-card
+  const card = document.querySelector(`.question-card[data-qidx="${qIdx}"]`);
+  if (card) {
+    card.querySelectorAll('.option-btn').forEach((b, i) => {
+      b.classList.toggle('selected', i+1===val);
+    });
+  }
+}
+
+function updateProgress() {
+  const pct = ((currentSection + 1) / SECTIONS.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  // 更新所有进度步骤
+  for (let i = 0; i < 10; i++) {
+    const el = document.getElementById('step-' + i);
+    if (el) {
+      el.classList.remove('active', 'done');
+      if (i === currentSection) el.classList.add('active');
+      else if (i < currentSection) el.classList.add('done');
+    }
+  }
+}
+
+function jumpToSection(idx) {
+  if (idx < 0 || idx >= SECTIONS.length) return;
+  currentSection = idx;
+  saveState();
+  renderSection(idx);
+  updateProgress();
+}
+
+function prevSection() {
+  if (currentSection <= 0) {
+    // 返回到信息填写页面
+    showUserInfoPage();
+    return;
+  }
+  currentSection--;
+  saveState();
+  renderSection(currentSection);
+  updateProgress();
+}
+
+function nextSection() {
+  const sec = SECTIONS[currentSection];
+  // 只保留性别匹配的题目
+  const filteredQuestions = sec.questions.filter(q => !q.gender || q.gender === userInfo.gender);
+  // 计算实际题目索引
+  let actualStartIdx = 0;
+  for (let j = 0; j < currentSection; j++) {
+    const filteredSecQ = SECTIONS[j].questions.filter(q => !q.gender || q.gender === userInfo.gender);
+    actualStartIdx += filteredSecQ.length;
+  }
+  for (let i = 0; i < filteredQuestions.length; i++) {
+    if (answers[actualStartIdx + i] === null) {
+      const cards = document.querySelectorAll('.question-card');
+      if (cards[i]) {
+        cards[i].style.border = '2px solid #EF4444';
+        cards[i].style.boxShadow = '0 0 0 4px rgba(239,68,68,0.3)';
+        setTimeout(() => { cards[i].style.border = ''; cards[i].style.boxShadow = ''; }, 1500);
+        cards[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+  }
+  if (currentSection < SECTIONS.length - 1) {
+    currentSection++;
+    renderSection(currentSection);
+    updateProgress();
+  } else {
+    showAiLoading();
+  }
+}
+
+// ── 雷达图生成函数（标准9边形，按得分排序） ──
+function generateRadarSVG(sortedScores, size) {
+  const center = size / 2;
+  const maxRadius = size / 2 - 40;
+  const n = 9; // 9种体质
+  
+  // 生成9边形网格（3层）
+  let gridPolygons = '';
+  for (let level = 1; level <= 3; level++) {
+    const r = (maxRadius * level) / 3;
+    let pts = [];
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * 360 - 90; // 从顶部开始
+      const rad = angle * Math.PI / 180;
+      const x = center + r * Math.cos(rad);
+      const y = center + r * Math.sin(rad);
+      pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+    gridPolygons += `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
+  }
+  
+  // 生成轴线
+  let axisLines = '';
+  for (let i = 0; i < n; i++) {
+    const angle = (i / n) * 360 - 90;
+    const rad = angle * Math.PI / 180;
+    const x = center + maxRadius * Math.cos(rad);
+    const y = center + maxRadius * Math.sin(rad);
+    axisLines += `<line x1="${center}" y1="${center}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+  }
+  
+  // 按圆形排列顺序生成数据点和标签（按得分从高到低）
+  let dataPoints = [];
+  let labelTexts = '';
+  const labelRadius = maxRadius + 22;
+  
+  for (let i = 0; i < n; i++) {
+    const item = sortedScores[i];
+    if (!item) continue;
+    
+    // 数据点（按圆形排列）
+    const angle = (i / n) * 360 - 90;
+    const rad = angle * Math.PI / 180;
+    const r = (item.transformed / 100) * maxRadius;
+    const x = center + r * Math.cos(rad);
+    const y = center + r * Math.sin(rad);
+    dataPoints.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    
+    // 标签（按圆形排列）
+    const labelX = center + labelRadius * Math.cos(rad);
+    const labelY = center + labelRadius * Math.sin(rad);
+    const normalizedAngle = ((angle % 360) + 360) % 360;
+    let anchor = 'middle';
+    if (normalizedAngle > 85 && normalizedAngle < 95) anchor = 'start';
+    else if (normalizedAngle > 175 && normalizedAngle < 185) anchor = 'end';
+    else if (normalizedAngle > 265 && normalizedAngle < 275) anchor = 'middle';
+    
+    labelTexts += `<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="${anchor}" fill="${item.color}" font-size="10" font-weight="600" dominant-baseline="middle">${item.name}<tspan fill="rgba(255,255,255,0.5)" font-size="9" font-weight="400">${item.transformed}</tspan></text>`;
+  }
+  
+  // 中心点标记
+  let centerDot = `<circle cx="${center}" cy="${center}" r="4" fill="rgba(255,255,255,0.3)"/>`;
+  
+  // 最高分顶点连线
+  const topItem = sortedScores[0];
+  const topAngle = -90;
+  const topRad = topAngle * Math.PI / 180;
+  const topR = (topItem.transformed / 100) * maxRadius;
+  const topX = center + topR * Math.cos(topRad);
+  const topY = center + topR * Math.sin(topRad);
+  
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="max-width:100%;">
+    ${gridPolygons}
+    ${axisLines}
+    <polygon points="${dataPoints.join(' ')}" fill="${topItem.color}" opacity="0.25" stroke="${topItem.color}" stroke-width="2"/>
+    <line x1="${center}" y1="${center}" x2="${topX.toFixed(1)}" y2="${topY.toFixed(1)}" stroke="${topItem.color}" stroke-width="1.5" opacity="0.5"/>
+    ${centerDot}
+    ${labelTexts}
+  </svg>`;
+}
+// ── 分数计算（按GB/T 46939-2025标准）─
+// 转化分公式：[(原始分 - 条目数) / (条目数 × 4)] × 100
+// 平和质带*条目需逆向计分：1→5, 2→4, 3→3, 4→2, 5→1
+function reverseScore(val) {
+  return 6 - val; // 1→5, 2→4, 3→3, 4→2, 5→1
+}
+
+function calculateScores() {
+  const scores = {};
+  CONSTITUTIONS.forEach(c => {
+    // 找出该体质的所有题目索引
+    const indices = ALL_QUESTIONS.map((q, i) => q.type === c.id ? i : -1).filter(i => i >= 0);
+    
+    // 计算原始分（平和质需逆向计分）
+    let raw = 0;
+    let itemCount = 0;
+    indices.forEach(i => {
+      const answer = answers[i];
+      if (answer !== null && answer !== undefined) {
+        const q = ALL_QUESTIONS[i];
+        // 平和质的带*条目需逆向计分
+        if (q.type === '平和' && q.reverse) {
+          raw += reverseScore(answer);
+        } else {
+          raw += answer;
+        }
+        itemCount++;
+      }
+    });
+    
+    // 标准转化分公式
+    const transformed = itemCount > 0 ? Math.round(((raw - itemCount) / (itemCount * 4)) * 100) : 0;
+    scores[c.id] = {
+      raw,
+      transformed: Math.max(0, Math.min(100, transformed)),
+      itemCount: itemCount
+    };
+  });
+  return scores;
+}
+
+function getRiskEmoji(risk) {
+  return ['🟢','🟡','🟡','🟠','🔴'][Math.min(risk-1,4)];
+}
+
+// ── AI Loading ──
+function showAiLoading() {
+  showPage('page-ai-loading');
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById('step-'+i);
+    if (el) el.className = 'ai-step';
+  }
+  const steps = [
+    {id:'step-1',delay:100},{id:'step-2',delay:300},{id:'step-3',delay:500},
+    {id:'step-4',delay:700},{id:'step-5',delay:900},{id:'step-6',delay:1100}
+  ];
+  steps.forEach(({id,delay}) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.className = 'ai-step done';
+    }, delay);
+  });
+  setTimeout(() => { calculateAndShowResults(); }, 1300);
+}
+
+// ── 病史风险增强 ──
+function getMedicalRiskBoost() {
+  let boost = 0;
+  const risks = [];
+  if (userInfo.medicalHistory.includes('hypertension')) { boost += 2; risks.push('高血压'); }
+  if (userInfo.medicalHistory.includes('diabetes')) { boost += 2; risks.push('糖尿病'); }
+  if (userInfo.medicalHistory.includes('hyperlipidemia')) { boost += 2; risks.push('高脂血症'); }
+  if (userInfo.medicalHistory.includes('coronary')) { boost += 3; risks.push('冠心病/心绞痛'); }
+  if (userInfo.medicalHistory.includes('palpitation')) { boost += 1; risks.push('心慌'); }
+  if (userInfo.medicalHistory.includes('stroke')) { boost += 3; risks.push('脑中风/后遗症'); }
+  if (userInfo.medicalHistory.includes('parkinson')) { boost += 2; risks.push('帕金森/阿尔茨海默'); }
+  if (userInfo.medicalHistory.includes('insomnia')) { boost += 1; risks.push('失眠/焦虑'); }
+  if (userInfo.medicalHistory.includes('cervical') || userInfo.medicalHistory.includes('bone')) { boost += 1; risks.push('骨关节病/颈椎腰间盘'); }
+  if (userInfo.medicalHistory.includes('skin')) { boost += 1; risks.push('皮肤病'); }
+  if (userInfo.medicalHistory.includes('rhinitis')) { boost += 1; risks.push('鼻炎/过敏性鼻炎'); }
+  if (userInfo.medicalHistory.includes('asthma')) { boost += 1; risks.push('哮喘/肺结核'); }
+  return { boost, risks };
+}
+
+// ── 计算并显示结果（主题色版）──
+function renderPresetResult() {
+  const pd = presetResultData;
+  const c = CONSTITUTIONS.find(x => x.name === pd.primaryType) || CONSTITUTIONS[0];
+  const t = pd.primaryScore;
+  const adjustedRisk = pd.riskLevel || 3;
+  const mhRisk = getMedicalRiskBoost();
+  const theme = THEME_MAP[c.id] || THEME_MAP['平和'];
+  
+  // 动态设置背景主题
+  document.body.style.background = theme.bg;
+  document.querySelectorAll('.page').forEach(p => p.style.background = 'transparent');
+  
+  document.getElementById('result-summary').textContent = `判定结果：${pd.primaryType}（转化分${t}分）`;
+  
+  const sorted = pd.sortedScores;
+  const radarSVG = generateRadarSVG(sorted, 300);
+  const cColor = c.color || '#ef4444';
+  
+  const radarCard = `
+    <div class="card" style="background:${theme.card};border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid ${theme.cardBorder};">
+      <div class="as-title" style="font-size:16px;font-weight:700;color:${theme.title};margin-bottom:16px;text-align:center;">📡 九种体质得分雷达图</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="display:flex;justify-content:center;">${radarSVG}</div>
+        <div style="text-align:center;">
+          <div style="font-size:14px;color:${theme.title};">转化分 <span style="font-weight:800;color:${cColor};font-size:16px;">${t}</span> <span style="font-size:11px;">（≥40即判定该体质）</span></div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid ${theme.cardBorder};text-align:center;">
+        <div style="font-size:28px;font-weight:900;color:${cColor};">${c.emoji} ${c.name}</div>
+        <div style="font-size:14px;color:${theme.title};margin-top:6px;">${c.desc}</div>
+        <div style="font-size:14px;color:${theme.songText};line-height:1.9;font-weight:600;padding:14px 16px;border-radius:10px;margin-top:14px;font-style:italic;background:${theme.songBg};border:1px solid ${theme.songBorder};white-space:pre-line;">${c.song}</div>
+      </div>
+    </div>`;
+  
+  const riskStars = '⭐'.repeat(adjustedRisk) + '☆'.repeat(5 - adjustedRisk);
+  const riskText = pd.riskText || '心脑血管风险中等';
+  
+  const aiContent = `
+    <div class="ai-analysis-card" style="background:${theme.aiBg};border:1px solid ${theme.aiBorder};border-radius:12px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:700;color:${theme.aiAccent};margin-bottom:10px;text-align:center;">🤖 AI智能分析</div>
+      <div style="font-size:13px;color:${theme.title};line-height:2.2;text-align:left;">
+        ${pd.aiAnalysis ? pd.aiAnalysis.split('\n').map(line => '• ' + line).join('<br>') : '• 根据您的问卷结果和健康信息进行了综合分析。'}
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed ${theme.aiBorder};text-align:center;">
+        <div style="font-size:11px;color:${theme.title};margin-bottom:6px;">心脑血管风险评估</div>
+        <div style="font-size:18px;letter-spacing:3px;color:${theme.riskText};">${riskStars}</div>
+        <div style="font-size:13px;color:${theme.riskText};font-weight:700;margin-top:4px;">${riskText}</div>
+      </div>
+    </div>
+    <div style="background:${theme.aiBg};border:1px solid ${theme.aiBorder};border-radius:12px;padding:16px;">
+      <div style="font-size:13px;font-weight:700;color:#22c55e;margin-bottom:10px;text-align:center;">🍵 食疗调理方案</div>
+      <div style="font-size:13px;color:${theme.title};line-height:2.2;text-align:left;">
+        ${pd.dietPlan ? pd.dietPlan.split('\n').map(line => '• ' + line).join('<br>') : '• 建议清淡饮食，规律作息。'}
+      </div>
+    </div>`;
+  
+  // 红外检测推荐
+  const infraTagStyle = `display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;background:${theme.tag};color:${theme.tagText};margin-right:6px;margin-bottom:6px;`;
+  const rxCard = `
+    <div style="background:linear-gradient(135deg,rgba(168,85,247,0.1),rgba(168,85,247,0.02));border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;">
+      <div style="font-size:13px;font-weight:700;color:#a855f7;margin-bottom:10px;text-align:center;">🔍 红外热成像体质检测</div>
+      <div style="font-size:13px;color:${theme.title};line-height:1.8;margin-bottom:12px;">通过红外热成像技术，可视化呈现您体内的"温度地图"，精准定位血瘀、寒湿等体质特征分布区域。</div>
+      <div style="margin-bottom:12px;">
+        ${(Array.isArray(pd.infraFeatures) ? pd.infraFeatures : (pd.infraFeatures || c.irFeature || '体质特征分布').split('；')).map(f => `<span style="${infraTagStyle}">${f}</span>`).join('')}
+      </div>
+      <div style="background:rgba(153,27,27,0.95);border:1px solid rgba(153,27,27,0.5);border-radius:10px;padding:14px;text-align:center;margin-bottom:12px;">
+        <div style="font-size:13px;color:#fca5a5;margin-bottom:8px;">仅需 <span style="font-size:20px;font-weight:800;color:#fff;">¥19.9</span> 即可参与红外检测</div>
+        <div style="font-size:12px;color:${theme.title};">扫码添加客服，预约检测时间</div>
+      </div>
+      <div style="font-size:11px;color:${theme.title};text-align:center;">长按识别二维码 → 添加客服微信</div>
+    </div>`;
+  
+  document.getElementById('result-container').innerHTML = radarCard + 
+    `<div class="section" style="margin-bottom:16px;"><div class="section-title" style="font-size:16px;font-weight:700;color:${theme.title};margin-bottom:12px;text-align:center;">🤖 AI智能分析 & 食疗方案</div>${aiContent}</div>` +
+    `<div class="section" style="margin-bottom:16px;"><div class="section-title" style="font-size:16px;font-weight:700;color:${theme.title};margin-bottom:12px;text-align:center;">🪡 红外检测 & 推荐服务</div>${rxCard}</div>` +
+    `<div style="height:30px;"></div>`;
+  
+  showPage('page-result');
+}
+
+function calculateAndShowResults() {
+  const scores = calculateScores();
+  const mhRisk = getMedicalRiskBoost();
+
+  const pingheScore = scores['平和'].transformed;
+  const otherScores = Object.entries(scores).filter(([k]) => k !== '平和').map(([,v]) => v);
+  const allOthersBelow30 = otherScores.every(v => v.transformed < 30);
+
+  let judgment = '';
+  let primary = null;
+  let activeOnes = [];
+
+  // 先计算平和质排名
+  const sorted = CONSTITUTIONS
+    .map(c => ({ ...c, transformed: scores[c.id].transformed }))
+    .sort((a,b) => b.transformed - a.transformed);
+  const pingheRank = sorted.findIndex(c => c.id === '平和') + 1;
+
+  // 平和质排名第一时，优先显示平和质
+  if (pingheRank === 1) {
+    if (pingheScore >= 60 && allOthersBelow30) {
+      judgment = '平和质';
+    } else if (pingheScore >= 40) {
+      judgment = '平和质';
+    } else if (pingheScore >= 30) {
+      judgment = '基本平和质';
+    } else {
+      judgment = '体质基本正常';
+    }
+    primary = CONSTITUTIONS.find(c => c.id === '平和');
+  } else {
+    // 平和质不是第一，按原有逻辑处理
+    activeOnes = CONSTITUTIONS
+      .map(c => ({ ...c, transformed: scores[c.id].transformed }))
+      .filter(c => c.id !== '平和' && c.transformed >= 40)
+      .sort((a,b) => b.transformed - a.transformed);
+    if (activeOnes.length > 1) {
+      judgment = `兼夹体质（${activeOnes.length}种）`;
+      primary = activeOnes[0];
+    } else if (activeOnes.length === 1) {
+      judgment = activeOnes[0].name;
+      primary = activeOnes[0];
+    } else {
+      const tendency = CONSTITUTIONS
+        .map(c => ({ ...c, transformed: scores[c.id].transformed }))
+        .filter(c => c.id !== '平和' && c.transformed >= 30 && c.transformed < 40)
+        .sort((a,b) => b.transformed - a.transformed);
+      if (tendency.length > 0) {
+        judgment = `倾向${tendency[0].name}`;
+        primary = tendency[0];
+      } else {
+        judgment = '体质基本正常';
+        primary = CONSTITUTIONS.find(c => c.id === '平和');
+      }
+    }
+  }
+
+  const c = primary;
+  const t = scores[c.id].transformed;
+  const theme = THEME_MAP[c.id] || THEME_MAP['平和'];
+  
+  // 动态设置背景主题
+  document.body.style.background = theme.bg;
+  document.querySelectorAll('.page').forEach(p => p.style.background = 'transparent');
+
+  document.getElementById('result-summary').textContent =
+    `判定结果：${judgment}（转化分${t}分）` + (mhRisk.boost > 0 ? ` | 病史风险加项：${mhRisk.boost}级` : '');
+
+  // 主卡（精简版，已整合到雷达图卡片）
+  const adjustedRisk = Math.min(5, c.risk + mhRisk.boost);
+  const primaryCard = '';
+
+  // 九种体质雷达图（标准9边形SVG）
+  const radarSVG = generateRadarSVG(sorted, 300);
+  const cColor = c.color || '#ef4444';
+  const radarCard = `
+    <div class="card" style="background:${theme.card};border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid ${theme.cardBorder};">
+      <div class="as-title" style="font-size:16px;font-weight:700;color:${theme.title};margin-bottom:16px;text-align:center;">📡 九种体质得分雷达图</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="display:flex;justify-content:center;">${radarSVG}</div>
+        <div style="text-align:center;">
+          <div style="font-size:14px;color:${theme.title};">转化分 <span style="font-weight:800;color:${cColor};font-size:16px;">${t}</span> <span style="font-size:11px;">（≥40即判定该体质）</span></div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid ${theme.cardBorder};text-align:center;">
+        <div style="font-size:28px;font-weight:900;color:${cColor};">${c.emoji} ${c.name}</div>
+        <div style="font-size:14px;color:${theme.title};margin-top:6px;">${c.desc}</div>
+        <div class="id-song-verse" style="font-size:14px;color:${theme.songText};line-height:1.9;font-weight:600;padding:12px 14px;border-radius:10px;margin-top:14px;font-style:italic;background:${theme.songBg};border:1px solid ${theme.songBorder};">${c.song}</div>
+      </div>
+    </div>`;
+
+  // 食疗方案（来源：体质建议.txt）
+  const dietMap = [
+    { emoji:'🌾', label:'五谷', val: c.diet.wuGu },
+    { emoji:'🍎', label:'五果', val: c.diet.wuGuo },
+    { emoji:'🥬', label:'五蔬', val: c.diet.wuSu },
+    { emoji:'🥩', label:'五畜', val: c.diet.wuXu },
+    { emoji:'🦐', label:'海产', val: c.diet.haiChan },
+    { emoji:'💊', label:'中药', val: c.diet.zhongYao }
+  ];
+  const dietItems = dietMap.filter(d => d.val && !d.val.includes('（特禀质') && !d.val.includes('（平和质'));
+  const dietGrid = dietItems.length > 0
+    ? `<div class="diet-detail-grid">${dietItems.map(d => `<div class="diet-item"><span class="di-emoji">${d.emoji}</span><span><span class="di-label">${d.label}</span>${d.val}</span></div>`).join('')}</div>`
+    : '';
+
+  // AI分析 + 食疗（增强版）
+  const riskStars = '⭐'.repeat(adjustedRisk) + '☆'.repeat(5 - adjustedRisk);
+  const riskText = adjustedRisk >= 4 ? '心脑血管风险偏高' : adjustedRisk >= 3 ? '心脑血管风险中等' : '心脑血管风险较低';
+  
+  // 体质对应中医理论分析
+  const ctMap = {
+    '气虚质': {theory:'元气亏虚', mechanism:'元气不足则宗气匮乏，无力推动血液运行，形成"气虚血瘀"格局。心脏如同引擎气虚，无力泵血，血管弹性下降。', symptoms:'胸闷气短、心悸心慌，爬楼梯或快走后加重；血压常偏低或脉压差大；夜间偶发心律不齐。', triggers:'剧烈运动、情绪激动、气温骤变、过度劳累、连续熬夜'},
+    '阳虚质': {theory:'心阳不振', mechanism:'心属火，阳虚则心火不足，温煦功能减退。血管遇寒则收引挛急，血液失于温煦则黏稠度上升。', symptoms:'畏寒肢冷、胸骨后隐痛（遇冷加重），心率偏慢；易在冬季或清晨发病。', triggers:'受寒着凉、进食生冷、空调过低、清晨起床、冬季凌晨'},
+    '阴虚质': {theory:'阴虚火旺', mechanism:'阴液不足则虚火内生，灼伤血管内皮；津液枯涸则血液浓缩，血流变学异常。', symptoms:'心烦失眠、潮热盗汗、心悸怔忡，血压波动大；夜间或情绪波动时症状明显。', triggers:'情绪波动、辛辣刺激、熬夜、更年期'},
+    '痰湿质': {theory:'痰瘀互结', mechanism:'脾虚生痰，痰浊黏腻，沉积于血管壁形成"痰瘀互结"，加速动脉粥样硬化。', symptoms:'体形肥胖、胸闷重着、头昏嗜睡，血液黏稠度高；动脉斑块形成风险显著增加。', triggers:'高脂饮食、久坐不动、晚餐过饱、饮酒过度'},
+    '湿热质': {theory:'湿热蕴结', mechanism:'湿热内蕴熏蒸津液，血液黏稠度升高；热邪灼伤血络，炎症反应活跃。', symptoms:'面红目赤、口苦黏腻、心烦易怒，血压常偏高；血脂异常、尿酸升高。', triggers:'饮酒熬夜、辛辣油腻、情绪急躁、湿热环境'},
+    '血瘀质': {theory:'瘀血阻络', mechanism:'瘀血内停，脉络不通，血流瘀滞。心脏供血不足则心绞痛，脑部供血不足则头晕。', symptoms:'固定部位刺痛、舌质紫暗有瘀斑、面色晦暗；易发生心肌梗死或脑梗死。', triggers:'外伤手术、长期久坐、情绪压抑、寒冷刺激、节气转换'},
+    '气郁质': {theory:'肝气郁结', mechanism:'肝主疏泄，气郁则气机阻滞；肝郁化火扰心；气滞则血瘀，诱发心脑血管事件。', symptoms:'胸胁胀闷、善太息、心烦失眠，血压可忽高忽低；易并发心脏神经官能症。', triggers:'情绪低落、生闷气、压力大、春季肝气当令'},
+    '特禀质': {theory:'先天禀赋异常', mechanism:'先天不足或过敏体质，免疫系统异常，血管壁慢性炎症反应，易合并自身免疫性血管炎。', symptoms:'体质敏感、易过敏、血管脆性增加；易合并过敏性心肌炎或血管炎。', triggers:'过敏原接触、感染诱发、免疫紊乱'},
+    '平和质': {theory:'阴阳平衡', mechanism:'气血调和、阴阳平衡，脏腑功能协调。血管弹性良好，血液流变学正常。', symptoms:'精力充沛、体态适中、睡眠良好，无需特殊治疗。', triggers:'保持现有生活方式即可'}
+  };
+  
+  // 年龄段分析
+  const ageMap = {
+    '≤25':'青年期血管弹性良好，但体质偏颇长期累积将增加中老年发病风险，建议早调理早预防。',
+    '26-40':'青壮年代谢旺盛，是体质偏颇代偿期，偶有不适多被忽视，此阶段干预效果最佳。',
+    '41-55':'中年危机期，各脏腑功能开始衰退，体质问题集中显现，心脑血管风险显著上升。',
+    '56-69':'中老年阶段，血管硬化加速，若不系统调理，心脑血管事件发生率急剧上升。',
+    '≥70':'老年心肾亏虚为本，调理仍可改善症状、提高生活质量、延长寿命。'
+  };
+  
+  const ct = ctMap[c.name] || ctMap['平和质'];
+  const ageInfo = ageMap[userInfo.age] || ageMap['41-55'];
+  const 发病倾向 = c['发病倾向'] || '平素患病较少';
+  
+  // 既往病史结合分析
+  const historyAnalysis = {
+    '心脏': '心主血脉，久病心气亏虚，易导致心悸、胸闷。建议配合补气活血调理。',
+    '脑血管': '脑为髓海，脑血管问题提示肾精不足、痰瘀阻络。建议健脑活血调理。',
+    '高血压': '高血压多与肝阳上亢、痰瘀互结相关，需平肝潜阳、化痰活血。',
+    '糖尿病': '糖尿病属"消渴"，气阴两虚为本，燥热为标，易并发心脑血管病变。',
+    '肿瘤': '中医认为"瘤"为痰瘀互结日久所致，需扶正祛邪、化瘀散结。'
+  };
+  const historyNote = mhRisk.boost > 0 ? `
+    <div style="margin-top:10px;padding:10px;background:${theme.riskBg};border-radius:8px;border:1px solid ${theme.riskBorder};">
+      <div style="font-size:12px;color:${theme.riskText};font-weight:700;margin-bottom:6px;">⚠️ 既往病史分析</div>
+      <div style="font-size:12px;color:${theme.title};line-height:1.6;">您的病史：${mhRisk.risks.join('、')}</div>
+      <div style="font-size:12px;color:${theme.title};line-height:1.6;margin-top:6px;">${mhRisk.risks.map(r => historyAnalysis[r] || '需注意日常调理。').join('</div><div style="font-size:12px;color:${theme.title};line-height:1.6;margin-top:6px;">')}</div>
+      <div style="font-size:12px;color:${theme.riskText};font-weight:600;margin-top:6px;">综合评估：风险等级额外提升 ${mhRisk.boost} 级</div>
+    </div>` : '';
+  
+  const aiContent = `
+    <div class="ai-analysis-card" style="background:${theme.aiBg};border:1px solid ${theme.aiBorder};border-radius:12px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:16px;font-weight:700;color:${theme.aiAccent};margin-bottom:14px;text-align:center;">🤖 AI智能分析</div>
+      <div style="margin-bottom:12px;text-align:center;"><div style="font-size:15px;color:${theme.title};font-weight:700;margin-bottom:6px;">📌 中医核心病机 → ${ct.theory}</div><div style="font-size:13px;color:${theme.title};line-height:1.7;opacity:0.9;">${ct.mechanism}</div></div>
+      <div style="margin-bottom:12px;text-align:center;"><div style="font-size:14px;font-weight:700;color:${theme.title};margin-bottom:6px;">⚡ 您可能出现的症状</div><div style="font-size:13px;color:${theme.title};line-height:1.7;opacity:0.9;">${ct.symptoms}</div></div>
+      <div style="margin-bottom:12px;text-align:center;"><div style="font-size:14px;font-weight:700;color:${theme.title};margin-bottom:6px;">🩺 发病倾向</div><div style="font-size:13px;color:${theme.riskText};line-height:1.7;">${发病倾向}</div></div>
+      <div style="margin-bottom:12px;text-align:center;"><div style="font-size:14px;font-weight:700;color:${theme.title};margin-bottom:6px;">🚨 高危诱发因素</div><div style="font-size:13px;color:${theme.riskText};line-height:1.7;">${ct.triggers}</div></div>
+      <div style="margin-bottom:12px;text-align:center;"><div style="font-size:14px;font-weight:700;color:${theme.title};margin-bottom:6px;">👤 年龄段特点</div><div style="font-size:13px;color:${theme.title};line-height:1.7;opacity:0.85;">${ageInfo}</div></div>
+      ${historyNote}
+      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed ${theme.aiBorder};text-align:center;"><div style="font-size:11px;color:${theme.title};margin-bottom:6px;">心脑血管风险评估</div><div style="font-size:18px;letter-spacing:3px;color:${theme.riskText};">${riskStars}</div><div style="font-size:13px;color:${theme.riskText};font-weight:700;margin-top:4px;">${riskText}</div></div>
+    </div>
+    <div style="background:${theme.aiBg};border:1px solid ${theme.aiBorder};border-radius:12px;padding:16px;">
+      <div style="font-size:14px;font-weight:700;color:#22c55e;margin-bottom:10px;text-align:center;">🍵 食疗调理方案</div>
+      <div style="font-size:13px;color:${theme.title};line-height:1.8;opacity:0.85;">${dietGrid || c.lifestyle || '建议清淡饮食，规律作息。'}</div>
+      ${c.lifestyle && c.lifestyle !== c.desc ? `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed ${theme.aiBorder};"><div style="font-size:12px;font-weight:600;color:${theme.title};margin-bottom:4px;">💆 起居调理建议</div><div style="font-size:12px;color:${theme.title};line-height:1.6;opacity:0.85;">${c.lifestyle}</div></div>` : ''}
+    </div>`;
+
+  // 红外检测推荐（主要推广）
+  const infraTagStyle = `display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;background:${theme.tag};color:${theme.tagText};margin-right:6px;margin-bottom:6px;`;
+  const rxCard = `
+    <div style="background:linear-gradient(135deg,rgba(168,85,247,0.1),rgba(168,85,247,0.02));border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;">
+      <div style="font-size:13px;font-weight:700;color:#a855f7;margin-bottom:10px;text-align:center;">🔍 红外热成像体质检测</div>
+      <div style="font-size:13px;color:${theme.title};line-height:1.8;margin-bottom:12px;opacity:0.85;">通过红外热成像技术，可视化呈现您体内的"温度地图"，精准定位血瘀、寒湿等体质特征分布区域。</div>
+      <div style="margin-bottom:12px;">
+        ${c.irFeature ? c.irFeature.split('；').map(f => `<span style="${infraTagStyle}">${f}</span>`).join('') : '<span style="' + infraTagStyle + '">体质特征分布</span>'}
+      </div>
+      <div style="background:rgba(153,27,27,0.95);border:1px solid rgba(153,27,27,0.5);border-radius:10px;padding:14px;text-align:center;margin-bottom:12px;">
+        <div style="font-size:13px;color:#fca5a5;margin-bottom:8px;">仅需 <span style="font-size:20px;font-weight:800;color:#fff;">¥19.9</span> 即可参与红外检测</div>
+        <div style="font-size:12px;color:${theme.title};">扫码添加客服，预约检测时间</div>
+      </div>
+      <div style="font-size:11px;color:${theme.title};text-align:center;">长按识别二维码 → 添加客服微信</div>
+    </div>`;
+
+
+  // 九种体质对应的企微群信息（请替换为实际二维码图片路径）
+  const groupInfo = {
+    '平和': {
+      name: '平和质养生群',
+      desc: '平和体质养生交流',
+      benefit: '• 保持健康生活方式<br>• 预防体质偏颇<br>• 中医养生知识分享',
+      color: '#22c55e',
+      bg: 'rgba(34,197,94,0.1)',
+      border: 'rgba(34,197,94,0.3)',
+      qrClass: 'qr-pinghe'
+    },
+    '气虚': {
+      name: '气虚质养生群',
+      desc: '补气养元调理交流',
+      benefit: '• 补气食疗方案<br>• 艾灸按摩指导<br>• 元气恢复打卡',
+      color: '#f59e0b',
+      bg: 'rgba(245,158,11,0.1)',
+      border: 'rgba(245,158,11,0.3)',
+      qrClass: 'qr-qixu'
+    },
+    '阳虚': {
+      name: '阳虚质养生群',
+      desc: '温补阳气调理交流',
+      benefit: '• 温阳食疗方案<br>• 艾灸穴位指导<br>• 驱寒保暖妙招',
+      color: '#3b82f6',
+      bg: 'rgba(59,130,246,0.1)',
+      border: 'rgba(59,130,246,0.3)',
+      qrClass: 'qr-yangxu'
+    },
+    '阴虚': {
+      name: '阴虚质养生群',
+      desc: '滋阴润燥调理交流',
+      benefit: '• 滋阴食疗方案<br>• 降火茶饮推荐<br>• 睡眠改善指导',
+      color: '#ef4444',
+      bg: 'rgba(239,68,68,0.1)',
+      border: 'rgba(239,68,68,0.3)',
+      qrClass: 'qr-yinxu'
+    },
+    '痰湿': {
+      name: '痰湿质养生群',
+      desc: '化痰祛湿调理交流',
+      benefit: '• 祛湿茶饮方案<br>• 健脾化痰食疗<br>• 运动排湿指导',
+      color: '#a855f7',
+      bg: 'rgba(168,85,247,0.1)',
+      border: 'rgba(168,85,247,0.3)',
+      qrClass: 'qr-tanshi'
+    },
+    '湿热': {
+      name: '湿热质养生群',
+      desc: '清热利湿调理交流',
+      benefit: '• 清热解毒茶饮<br>• 利湿食疗方案<br>• 清肝利胆指导',
+      color: '#eab308',
+      bg: 'rgba(234,179,8,0.1)',
+      border: 'rgba(234,179,8,0.3)',
+      qrClass: 'qr-shire'
+    },
+    '血瘀': {
+      name: '血瘀质养生群',
+      desc: '活血化瘀调理交流',
+      benefit: '• 活血化瘀食疗<br>• 通络按摩指导<br>• 九针清淤服务咨询',
+      color: '#dc2626',
+      bg: 'rgba(220,38,38,0.1)',
+      border: 'rgba(220,38,38,0.3)',
+      qrClass: 'qr-xueyu'
+    },
+    '气郁': {
+      name: '气郁质养生群',
+      desc: '疏肝解郁调理交流',
+      benefit: '• 疏肝茶饮推荐<br>• 情志调节指导<br>• 穴位按摩视频',
+      color: '#8b5cf6',
+      bg: 'rgba(139,92,246,0.1)',
+      border: 'rgba(139,92,246,0.3)',
+      qrClass: 'qr-qiyu'
+    },
+    '特禀': {
+      name: '特禀质养生群',
+      desc: '过敏体质调理交流',
+      benefit: '• 过敏原规避指导<br>• 脱敏食疗方案<br>• 免疫调节建议',
+      color: '#06b6d4',
+      bg: 'rgba(6,182,212,0.1)',
+      border: 'rgba(6,182,212,0.3)',
+      qrClass: 'qr-tebing'
+    }
+  };
+
+  // 根据体质ID获取群信息
+  const constitutionId = c.id || c.name.replace('质','');
+  const group = groupInfo[constitutionId] || groupInfo['平和'];
+  
+  // 企微群引流卡片
+  const groupCard = `
+    <div style="background:${theme.aiBg};border:2px solid ${group.border};border-radius:16px;padding:20px;margin-bottom:16px;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="display:inline-block;padding:6px 16px;border-radius:20px;font-size:13px;background:${group.bg};color:${group.color};font-weight:700;margin-bottom:10px;">
+          ${group.emoji || ''} 您的体质：${c.name}
+        </div>
+        <div style="font-size:16px;font-weight:700;color:${theme.title};margin-bottom:4px;">🏠 加入${group.name}</div>
+        <div style="font-size:12px;color:${theme.title};opacity:0.7;">${group.desc}</div>
+      </div>
+      
+      <div style="background:${group.bg};border-radius:12px;padding:14px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:${group.color};margin-bottom:8px;text-align:center;">🎁 进群专属权益</div>
+        <div style="font-size:12px;color:${theme.title};line-height:1.9;text-align:center;">
+          ${group.benefit}
+        </div>
+      </div>
+      
+      <div style="text-align:center;margin-bottom:12px;">
+        <div id="${group.qrClass}" style="display:inline-block;width:180px;height:180px;background:#fff;border-radius:12px;border:2px dashed ${group.border};padding:8px;box-sizing:border-box;">
+          <!-- 二维码占位区域 -->
+          <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:${theme.title};opacity:0.5;font-size:11px;text-align:center;">
+            <div style="font-size:28px;margin-bottom:6px;">📱</div>
+            <div>请替换为</div>
+            <div>实际二维码图片</div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-size:12px;color:${theme.title};opacity:0.8;">长按识别二维码 → 加入${group.name}</div>
+      </div>
+      
+      <div style="text-align:center;">
+        <a href="weixin://contacts/add?wechatId=YOUR_WECOM_ID" style="display:inline-block;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,${group.color},${group.color}dd);text-decoration:none;box-shadow:0 4px 12px ${group.border};">
+          👈 或直接添加健康顾问
+        </a>
+      </div>
+    </div>`;
+
+  document.getElementById('result-container').innerHTML =
+    radarCard + 
+    `<div class="section" style="margin-bottom:16px;"><div class="section-title" style="font-size:14px;font-weight:600;color:${theme.title};margin-bottom:12px;">🤖 AI智能分析 & 食疗方案</div>${aiContent}</div>` +
+    `<div class="section" style="margin-bottom:16px;"><div class="section-title" style="font-size:14px;font-weight:600;color:${theme.title};margin-bottom:12px;">🏠 养生群加入通道</div>${groupCard}</div>` +
+    `<div class="section" style="margin-bottom:16px;"><div class="section-title" style="font-size:14px;font-weight:600;color:${theme.title};margin-bottom:12px;">🪡 红外检测 & 推荐服务</div>${rxCard}</div>` +
+    `<div style="height:30px;"></div>`;
+  
+  showPage('page-result');  // 切换到结果页
+}
+
+// 模拟测试函数：快速预览9种体质结果
+function simulateTest(type) {
+  // 设置默认用户信息
+  userInfo = {
+    gender: 'male',
+    age: '26-40',
+    height: 170,
+    weight: 70,
+    history: []
+  };
+  
+  // 初始化答案数组
+  answers = new Array(27).fill(1); // 默认都选"没有"
+  
+  // 根据体质类型设置不同答案
+  const high = 5, mid = 4, low = 2;
+  
+  switch(type) {
+    case '平和':
+      // 平和质：平和题选高，其他选低
+      // 平和题：1,5,9,13,17,21（平和题：1=5分，2=4分，3=3分，4=2分，5=1分）
+      answers[0]=5; answers[4]=5; answers[8]=5; answers[12]=5; answers[16]=5; answers[20]=5;
+      // 气虚题
+      answers[1]=1; answers[2]=1; answers[3]=1;
+      // 阳虚题
+      answers[5]=1; answers[6]=1; answers[7]=1;
+      // 阴虚题
+      answers[9]=1; answers[10]=1; answers[11]=1;
+      // 痰湿题
+      answers[13]=1; answers[14]=1; answers[15]=1;
+      // 湿热题
+      answers[16]=1; answers[17]=1; answers[18]=1;
+      // 血瘀题
+      answers[19]=1; answers[20]=1; answers[21]=1;
+      // 气郁题
+      answers[22]=1; answers[23]=1; answers[24]=1;
+      // 特禀题
+      answers[25]=1; answers[26]=1; answers[27]||(answers[27]=1);
+      break;
+    case '气虚':
+      // 气虚题选高
+      answers[1]=high; answers[2]=high; answers[3]=high;
+      // 其他偏低
+      answers[0]=1; answers[4]=1;
+      answers[5]=mid; answers[6]=mid; answers[7]=mid;
+      answers[9]=mid; answers[10]=mid; answers[11]=mid;
+      answers[13]=mid; answers[14]=mid; answers[15]=mid;
+      answers[16]=mid; answers[17]=mid; answers[18]=mid;
+      answers[19]=mid; answers[20]=mid; answers[21]=mid;
+      answers[22]=mid; answers[23]=mid; answers[24]=mid;
+      answers[25]=mid; answers[26]=mid;
+      break;
+    case '阳虚':
+      answers[5]=high; answers[6]=high; answers[7]=high;
+      answers[0]=low; answers[1]=mid; answers[2]=mid;
+      answers[9]=mid; answers[10]=mid; answers[11]=mid;
+      answers[13]=mid; answers[14]=mid; answers[15]=mid;
+      answers[16]=mid; answers[17]=mid; answers[18]=mid;
+      answers[19]=mid; answers[20]=mid; answers[21]=mid;
+      answers[22]=mid; answers[23]=mid; answers[24]=mid;
+      answers[25]=mid; answers[26]=mid;
+      break;
+    case '阴虚':
+      answers[9]=high; answers[10]=high; answers[11]=high;
+      answers[0]=low; answers[1]=mid; answers[2]=mid;
+      answers[5]=mid; answers[6]=mid; answers[7]=mid;
+      answers[13]=mid; answers[14]=mid; answers[15]=mid;
+      answers[16]=mid; answers[17]=mid; answers[18]=mid;
+      answers[19]=mid; answers[20]=mid; answers[21]=mid;
+      answers[22]=mid; answers[23]=mid; answers[24]=mid;
+      answers[25]=mid; answers[26]=mid;
+      break;
+    case '痰湿':
+      answers[13]=high; answers[14]=high; answers[15]=high;
+      answers[0]=low; answers[1]=mid; answers[2]=mid;
+      answers[5]=mid; answers[6]=mid; answers[7]=mid;
+      answers[9]=mid; answers[10]=mid; answers[11]=mid;
+      answers[16]=mid; answers[17]=mid; answers[18]=mid;
+      answers[19]=mid; answers[20]=mid; answers[21]=mid;
+      answers[22]=mid; answers[23]=mid; answers[24]=mid;
+      answers[25]=mid; answers[26]=mid;
+      break;
+    case '湿热':
+      answers[16]=high; answers[17]=high; answers[18]=high;
+      answers[0]=low; answers[1]=mid; answers[2]=mid;
+      answers[5]=mid; answers[6]=mid; answers[7]=mid;
+      answers[9]=mid; answers[10]=mid; answers[11]=mid;
+      answers[13]=mid; answers[14]=mid; answers[15]=mid;
+      answers[19]=mid; answers[20]=mid; answers[21]=mid;
+      answers[22]=mid; answers[23]=mid; answers[24]=mid;
+      answers[25]=mid; answers[26]=mid;
+      break;
+    case '血瘀':
+      answers[19]=high; answers[20]=high; answers[21]=high;
+      answers[0]=low; answers[1]=mid; answers[2]=mid;
+      answers[5]=mid; answers[6]=mid; answers[7]=mid;
+      answers[9]=mid; answers[10]=mid; answers[11]=mid;
+      answers[13]=mid; answers[14]=mid; answers[15]=mid;
+      answers[16]=mid; answers[17]=mid; answers[18]=mid;
+      answers[22]=mid; answers[23]=mid; answers[24]=mid;
+      answers[25]=mid; answers[26]=mid;
+      break;
+    case '气郁':
+      answers[22]=high; answers[23]=high; answers[24]=high;
+      answers[0]=low; answers[1]=mid; answers[2]=mid;
+      answers[5]=mid; answers[6]=mid; answers[7]=mid;
+      answers[9]=mid; answers[10]=mid; answers[11]=mid;
+      answers[13]=mid; answers[14]=mid; answers[15]=mid;
+      answers[16]=mid; answers[17]=mid; answers[18]=mid;
+      answers[19]=mid; answers[20]=mid; answers[21]=mid;
+      answers[25]=mid; answers[26]=mid;
+      break;
+    case '特禀':
+      answers[25]=high; answers[26]=high;
+      answers[0]=low; answers[1]=mid; answers[2]=mid;
+      answers[5]=mid; answers[6]=mid; answers[7]=mid;
+      answers[9]=mid; answers[10]=mid; answers[11]=mid;
+      answers[13]=mid; answers[14]=mid; answers[15]=mid;
+      answers[16]=mid; answers[17]=mid; answers[18]=mid;
+      answers[19]=mid; answers[20]=mid; answers[21]=mid;
+      answers[22]=mid; answers[23]=mid; answers[24]=mid;
+      break;
+  }
+  
+  // 计算并显示结果
+  calculateAndShowResults();
+}
+
+async function shareResult() {
+  const btn = document.querySelector('[onclick="shareResult()"]');
+  if (btn) { btn.textContent = '⏳ 生成中...'; btn.disabled = true; }
+  
+  try {
+    const card = document.getElementById('result-container');
+    const canvas = await html2canvas(card, {
+      backgroundColor: '#0f172a',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+    const link = document.createElement('a');
+    link.download = '体质分析报告.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    if (btn) { btn.textContent = '✅ 生成成功'; setTimeout(() => { btn.textContent = '📤 生成分享图片'; btn.disabled = false; }, 2000); }
+  } catch (err) {
+    console.error(err);
+    if (btn) { btn.textContent = '❌ 生成失败'; btn.disabled = false; }
+  }
+}
+
+function copyWechat() {
+  navigator.clipboard.writeText('13581570349').then(() => {
+    alert('✅ 微信号已复制：13581570349\n打开微信粘贴搜索即可添加！');
+  }).catch(() => {
+    alert('📱 请手动复制微信号：13581570349');
+  });
+}
+</script>
+</body>
+</html>
